@@ -7,13 +7,13 @@ import yaml
 config = yaml.load(open('./configs/default.yaml', 'r'), Loader=yaml.FullLoader)
 
 default_num_threads = config["nnUNet_def_n_proc"]
-if config['preprocessing_args']['tl']:
-    tl = config['preprocessing_args']['tl']
+if config['tl']:
+    tl = config['tl']
 else:
     tl = default_num_threads
   
-if config['preprocessing_args']['tf']:
-    tf = config['preprocessing_args']['tf']
+if config['tf']:
+    tf = config['tf']
 else:
     tf = default_num_threads
     
