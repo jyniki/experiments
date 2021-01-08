@@ -4,11 +4,9 @@ Date: 2021-01-07 17:22:21
 Description: 
 '''
 
-from collections import OrderedDict
 from multiprocessing import Pool
 import numpy as np
 from batchgenerators.utilities.file_and_folder_operations import *
-from experiment_planning.DatasetAnalyzer import DatasetAnalyzer
 from experiment_planning.common_utils import split_4d_nifti
 from paths import nnUNet_raw_data, nnUNet_cropped_data, preprocessing_output_dir, network_training_output_dir
 import torch.nn.functional as F
@@ -19,7 +17,6 @@ import torch
 def recursive_find_python_class(folder, trainer_name, current_module):
     tr = None
     for _, modname, ispkg in pkgutil.iter_modules(folder):
-        # print(modname, ispkg)
         if not ispkg:
             m = importlib.import_module(current_module + "." + modname)
             if hasattr(m, trainer_name):
