@@ -160,8 +160,7 @@ class NetworkTrainer(object):
         :return:
         """
         try:
-            font = {'weight': 'normal',
-                    'size': 18}
+            font = {'weight': 'normal', 'size': 18}
 
             matplotlib.rc('font', **font)
 

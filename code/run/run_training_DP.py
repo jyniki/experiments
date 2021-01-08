@@ -29,8 +29,7 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
         fold = int(fold)
 
     print("number of GPUs:" + str(num_gpus))
-    plans_file, output_folder_name, dataset_directory, batch_dice, stage, \
-        trainer_class = get_default_configuration(network, task, network_trainer, plans_identifier)
+    plans_file, output_folder_name, dataset_directory, batch_dice, stage, trainer_class = get_default_configuration(network, task, network_trainer, plans_identifier)
 
     if trainer_class is None:
         raise RuntimeError("Could not find trainer class")
@@ -43,6 +42,7 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
         assert issubclass(trainer_class, nnUNetTrainer), "network_trainer was found but is not derived from " \
                                                          "nnUNetTrainer"
 
+    print(trainer_class)
     trainer = trainer_class(plans_file, fold, output_folder=output_folder_name,
                             dataset_directory=dataset_directory, batch_dice=batch_dice, stage=stage,
                             unpack_data=decompress_data, deterministic=deterministic,

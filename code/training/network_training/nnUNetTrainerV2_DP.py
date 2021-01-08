@@ -146,7 +146,10 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
 
         ds = self.network.do_ds
         self.network.do_ds = True
-        self.network = DataParallel(self.network, tuple(range(self.num_gpus)), )
+        
+        # self.network = DataParallel(self.network, tuple(range(self.num_gpus)), )
+        self.network = DataParallel(self.network, device_ids = list(range(0, self.num_gpus)))
+        
         ret = nnUNetTrainer.run_training(self)
         self.network = self.network.module
         self.network.do_ds = ds
