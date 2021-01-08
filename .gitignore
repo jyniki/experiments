@@ -2,5 +2,4 @@
 **/__pycache__
 experiments.udb
 **/.DS_Store
-*.yaml
-
+**/configs

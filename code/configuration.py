@@ -4,7 +4,7 @@ Date: 2020-12-30 18:03:03
 Description: 
 '''
 import yaml
-config = yaml.load(open('./configs.yaml', 'r'), Loader=yaml.FullLoader)
+config = yaml.load(open('./configs/default.yaml', 'r'), Loader=yaml.FullLoader)
 
 default_num_threads = config["nnUNet_def_n_proc"]
 if config['preprocessing_args']['tl']:
