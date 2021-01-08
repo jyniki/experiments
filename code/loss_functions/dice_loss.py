@@ -1,6 +1,6 @@
 import torch
-from training.loss_functions.TopK_loss import TopKLoss
-from training.loss_functions.crossentropy import RobustCrossEntropyLoss
+from loss_functions.TopK_loss import TopKLoss
+from loss_functions.crossentropy import RobustCrossEntropyLoss
 from utils import softmax_helper, sum_tensor
 from torch import nn
 import numpy as np

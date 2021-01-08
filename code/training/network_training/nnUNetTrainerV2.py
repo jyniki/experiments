@@ -3,7 +3,7 @@ from typing import Tuple
 
 import numpy as np
 import torch
-from training.loss_functions.deep_supervision import MultipleOutputLoss2
+from loss_functions.deep_supervision import MultipleOutputLoss2
 from utils import maybe_to_torch, to_cuda, softmax_helper
 from training.data_augmentation.default_data_augmentation import get_moreDA_augmentation
 from network_architecture.generic_UNet import Generic_UNet

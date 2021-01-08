@@ -5,7 +5,7 @@ Description:
 '''
 import numpy as np
 import torch
-from training.loss_functions.crossentropy import RobustCrossEntropyLoss
+from loss_functions.crossentropy import RobustCrossEntropyLoss
 
 
 class TopKLoss(RobustCrossEntropyLoss):
