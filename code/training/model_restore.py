@@ -24,19 +24,10 @@ def restore_model(pkl_file, checkpoint=None, train=False, fp16=None):
     assert issubclass(tr, nnUNetTrainer), "The network trainer was found but is not a subclass of nnUNetTrainer. " \
                                           "Please make it so!"
 
-    # this is now deprecated
-    """if len(init) == 7:
-        print("warning: this model seems to have been saved with a previous version of nnUNet. Attempting to load it "
-              "anyways. Expect the unexpected.")
-        print("manually editing init args...")
-        init = [init[i] for i in range(len(init)) if i != 2]"""
-
     # ToDo Fabian make saves use kwargs, please...
 
     trainer = tr(*init)
 
-    # We can hack fp16 overwriting into the trainer without changing the init arguments because nothing happens with
-    # fp16 in the init, it just saves it to a member variable
     if fp16 is not None:
         trainer.fp16 = fp16
 

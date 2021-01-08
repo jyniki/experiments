@@ -47,7 +47,7 @@ def preprocess(task_ids,  pl3d= 'ExperimentPlanner3D_v21', pl2d = 'ExperimentPla
 
         tasks.append(task_name)
 
-    search_in = "./experiment_planning"
+    search_in = join(os.getcwd(),"experiment_planning")
 
     if planner_name3d is not None:
         planner_3d = recursive_find_python_class([search_in], planner_name3d, current_module="experiment_planning")
@@ -57,7 +57,7 @@ def preprocess(task_ids,  pl3d= 'ExperimentPlanner3D_v21', pl2d = 'ExperimentPla
         planner_3d = None
 
     if planner_name2d is not None:
-        planner_2d = recursive_find_python_class([search_in], planner_name2d, current_module="nnunet.experiment_planning")
+        planner_2d = recursive_find_python_class([search_in], planner_name2d, current_module="experiment_planning")
         if planner_2d is None:
             raise RuntimeError("Could not find the Planner class %s. Make sure it is located somewhere in experiment_planning" % planner_name2d)
     else:
