@@ -1,5 +1,5 @@
 ## Template 
-DATASET_DIR: /data0/JY/project/algorithm/cv_project/DATASET
+DATASET_DIR: /data0/JY/project/algorithm/nnUNet/DATASET
 output_identifier: pretrain #nnUNet
 default_plans_identifier: "nnUNetPlansv2.1"
 default_data_identifier: 'nnUNet'
