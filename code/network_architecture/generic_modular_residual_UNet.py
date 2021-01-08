@@ -9,7 +9,6 @@ from torch import nn
 from torch.optim import SGD
 from torch.backends import cudnn
 
-
 class ResidualUNetEncoder(nn.Module):
     def __init__(self, input_channels, base_num_features, num_blocks_per_stage, feat_map_mul_on_downscale,
                  pool_op_kernel_sizes, conv_kernel_sizes, props, default_return_skips=True,
@@ -114,8 +113,6 @@ class ResidualUNetEncoder(nn.Module):
             print(p, num_feat, num_convs, current_shape)
             tmp += num_convs * np.prod(current_shape) * num_feat
         return tmp * batch_size
-
-
 class ResidualUNetDecoder(nn.Module):
     def __init__(self, previous, num_classes, num_blocks_per_stage=None, network_props=None, deep_supervision=False,
                  upscale_logits=False, block=BasicResidualBlock):
@@ -243,8 +240,6 @@ class ResidualUNetDecoder(nn.Module):
             tmp += num_convs * np.prod(current_shape) * num_feat
 
         return tmp * batch_size
-
-
 class ResidualUNet(SegmentationNetwork):
     use_this_for_batch_size_computation_2D = 858931200.0  # 1167982592.0
     use_this_for_batch_size_computation_3D = 727842816.0  # 1152286720.0
@@ -285,7 +280,6 @@ class ResidualUNet(SegmentationNetwork):
                                                                   feat_map_mul_on_downscale, batch_size)
 
         return enc + dec
-
 
 class FabiansUNet(SegmentationNetwork):
     """

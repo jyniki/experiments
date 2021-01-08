@@ -2,10 +2,8 @@ import torch
 from network_architecture.custom_modules.conv_blocks import StackedConvLayers
 from network_architecture.generic_UNet import Upsample
 from network_architecture.neural_network import SegmentationNetwork
-from training.loss_functions.dice_loss import DC_and_CE_loss
 from torch import nn
 import numpy as np
-from torch.optim import SGD
 
 def get_default_network_config(dim=2, dropout_p=None, nonlin="LeakyReLU", norm_type="bn"):
     """
