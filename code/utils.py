@@ -7,7 +7,6 @@ Description:
 from multiprocessing import Pool
 import numpy as np
 from batchgenerators.utilities.file_and_folder_operations import *
-from experiment_planning.common_utils import split_4d_nifti
 from paths import nnUNet_raw_data, nnUNet_cropped_data, preprocessing_output_dir, network_training_output_dir
 import torch.nn.functional as F
 import pkgutil
