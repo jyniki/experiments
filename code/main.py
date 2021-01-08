@@ -27,7 +27,7 @@ def pipeline():
     if 1 in operation_type:
         print("convert_decathlon")
         from preprocessing import nnUNet_convert_decathlon_task as cdt
-        original_data = join(nnUNet_raw_data,config['original_data'])
+        original_data = join(nnUNet_raw_data,config['convert_decathlon']['original_data'])
         cdt.convert_decathlon(original_data, default_num_threads)
 
     if 2 in operation_type:
