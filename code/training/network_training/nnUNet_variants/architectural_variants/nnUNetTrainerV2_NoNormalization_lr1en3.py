@@ -13,7 +13,7 @@
 #    limitations under the License.
 
 
-from nnunet.training.network_training.nnUNet_variants.architectural_variants.nnUNetTrainerV2_NoNormalization import \
+from training.network_training.nnUNet_variants.architectural_variants.nnUNetTrainerV2_NoNormalization import \
     nnUNetTrainerV2_NoNormalization
 
 

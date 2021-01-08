@@ -13,13 +13,13 @@
 #    limitations under the License.
 
 
-from nnunet.network_architecture.custom_modules.feature_response_normalization import FRN3D
-from nnunet.network_architecture.generic_UNet import Generic_UNet
-from nnunet.network_architecture.initialization import InitWeights_He
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
-from nnunet.utilities.nd_softmax import softmax_helper
+from network_architecture.custom_modules.feature_response_normalization import FRN3D
+from network_architecture.generic_UNet import Generic_UNet
+from network_architecture.initialization import InitWeights_He
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from utils import softmax_helper
 from torch import nn
-from nnunet.network_architecture.custom_modules.helperModules import Identity
+from network_architecture.custom_modules.helperModules import Identity
 import torch
 
 

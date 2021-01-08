@@ -16,9 +16,9 @@ def restore_model(pkl_file, checkpoint=None, train=False, fp16=None):
     tr = recursive_find_python_class([search_in], name, current_module="training.network_training")
 
     if tr is None:
-        raise RuntimeError("Could not find the model trainer specified in checkpoint in nnunet.trainig.network_training. If it "
+        raise RuntimeError("Could not find the model trainer specified in checkpoint in trainig.network_training. If it "
                            "is not located there, please move it or change the code of restore_model. Your model "
-                           "trainer can be located in any directory within nnunet.trainig.network_training (search is recursive)."
+                           "trainer can be located in any directory within trainig.network_training (search is recursive)."
                            "\nDebug info: \ncheckpoint file: %s\nName of trainer: %s " % (checkpoint, name))
     
     assert issubclass(tr, nnUNetTrainer), "The network trainer was found but is not a subclass of nnUNetTrainer. " \

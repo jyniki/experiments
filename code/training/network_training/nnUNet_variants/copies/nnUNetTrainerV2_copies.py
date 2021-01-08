@@ -13,7 +13,7 @@
 #    limitations under the License.
 
 
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 
 
 # This stuff is just so that we can check stability of results. Training is nondeterministic and by renaming the trainer

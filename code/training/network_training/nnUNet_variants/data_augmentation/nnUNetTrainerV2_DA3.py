@@ -20,20 +20,21 @@ from batchgenerators.transforms import Compose, MirrorTransform, GammaTransform,
 from batchgenerators.transforms.spatial_transforms import SpatialTransform_2
 from batchgenerators.transforms.utility_transforms import RemoveLabelTransform, NumpyToTensor, RenameTransform
 from batchgenerators.utilities.file_and_folder_operations import join
-from nnunet.network_architecture.generic_UNet import Generic_UNet
-from nnunet.network_architecture.initialization import InitWeights_He
-from nnunet.network_architecture.neural_network import SegmentationNetwork
-from nnunet.training.data_augmentation.custom_transforms import ConvertSegmentationToRegionsTransform, MaskTransform, \
+
+from network_architecture.generic_UNet import Generic_UNet
+from network_architecture.initialization import InitWeights_He
+from network_architecture.neural_network import SegmentationNetwork
+from training.data_augmentation.custom_transforms import ConvertSegmentationToRegionsTransform, MaskTransform, \
     Convert2DTo3DTransform, Convert3DTo2DTransform
-from nnunet.training.data_augmentation.default_data_augmentation import default_3D_augmentation_params, \
+from training.data_augmentation.default_data_augmentation import default_3D_augmentation_params, \
     default_2D_augmentation_params, get_patch_size
-from nnunet.training.data_augmentation.downsampling import DownsampleSegForDSTransform3, DownsampleSegForDSTransform2
-from nnunet.training.data_augmentation.pyramid_augmentations import \
+from training.data_augmentation.downsampling import DownsampleSegForDSTransform3, DownsampleSegForDSTransform2
+from training.data_augmentation.pyramid_augmentations import \
     RemoveRandomConnectedComponentFromOneHotEncodingTransform, ApplyRandomBinaryOperatorTransform, MoveSegAsOneHotToData
-from nnunet.training.dataloading.dataset_loading import unpack_dataset
-from nnunet.training.loss_functions.deep_supervision import MultipleOutputLoss2
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2, maybe_mkdir_p
-from nnunet.utilities.nd_softmax import softmax_helper
+from training.dataloading.dataset_loading import unpack_dataset
+from training.loss_functions.deep_supervision import MultipleOutputLoss2
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2, maybe_mkdir_p
+from utils import softmax_helper
 from torch import nn
 import numpy as np
 

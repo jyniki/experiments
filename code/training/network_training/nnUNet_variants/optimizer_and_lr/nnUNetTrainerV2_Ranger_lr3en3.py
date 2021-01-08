@@ -13,8 +13,8 @@
 #    limitations under the License.
 
 
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
-from nnunet.training.optimizer.ranger import Ranger
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from training.optimizer.ranger import Ranger
 
 
 class nnUNetTrainerV2_Ranger_lr3en3(nnUNetTrainerV2):

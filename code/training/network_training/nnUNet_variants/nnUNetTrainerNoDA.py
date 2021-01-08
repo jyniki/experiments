@@ -15,10 +15,10 @@
 
 import matplotlib
 from batchgenerators.utilities.file_and_folder_operations import maybe_mkdir_p, join
-from nnunet.network_architecture.neural_network import SegmentationNetwork
-from nnunet.training.data_augmentation.default_data_augmentation import get_no_augmentation
-from nnunet.training.dataloading.dataset_loading import unpack_dataset, DataLoader3D, DataLoader2D
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
+from network_architecture.neural_network import SegmentationNetwork
+from training.data_augmentation.default_data_augmentation import get_no_augmentation
+from training.dataloading.dataset_loading import unpack_dataset, DataLoader3D, DataLoader2D
+from training.network_training.nnUNetTrainer import nnUNetTrainer
 from torch import nn
 
 matplotlib.use("agg")

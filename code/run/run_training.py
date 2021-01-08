@@ -35,7 +35,7 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
         get_default_configuration(network, task, network_trainer, plans_identifier)
 
     if trainer_class is None:
-        raise RuntimeError("Could not find trainer class in nnunet.training.network_training")
+        raise RuntimeError("Could not find trainer class in training.network_training")
 
     if network == "3d_cascade_fullres":
         assert issubclass(trainer_class, (nnUNetTrainerCascadeFullRes, nnUNetTrainerV2CascadeFullRes)), \

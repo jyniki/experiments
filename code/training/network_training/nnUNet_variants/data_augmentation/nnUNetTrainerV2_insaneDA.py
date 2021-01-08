@@ -15,12 +15,12 @@
 
 import numpy as np
 from batchgenerators.utilities.file_and_folder_operations import join, maybe_mkdir_p
-from nnunet.network_architecture.neural_network import SegmentationNetwork
-from nnunet.training.data_augmentation.default_data_augmentation import default_3D_augmentation_params, \
+from network_architecture.neural_network import SegmentationNetwork
+from training.data_augmentation.default_data_augmentation import default_3D_augmentation_params, \
     default_2D_augmentation_params, get_patch_size, get_insaneDA_augmentation
-from nnunet.training.dataloading.dataset_loading import unpack_dataset
-from nnunet.training.loss_functions.deep_supervision import MultipleOutputLoss2
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from training.dataloading.dataset_loading import unpack_dataset
+from training.loss_functions.deep_supervision import MultipleOutputLoss2
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from torch import nn
 
 

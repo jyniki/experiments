@@ -6,11 +6,11 @@ try:
 except ImportError:
     MyDSLoss4 = None
 
-from nnunet.network_architecture.neural_network import SegmentationNetwork
-from nnunet.training.data_augmentation.default_data_augmentation import get_moreDA_augmentation
-from nnunet.training.dataloading.dataset_loading import unpack_dataset
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from network_architecture.neural_network import SegmentationNetwork
+from training.data_augmentation.default_data_augmentation import get_moreDA_augmentation
+from training.dataloading.dataset_loading import unpack_dataset
+from training.network_training.nnUNetTrainer import nnUNetTrainer
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from torch import nn
 import numpy as np
 

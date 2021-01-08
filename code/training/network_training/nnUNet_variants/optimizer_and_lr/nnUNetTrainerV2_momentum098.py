@@ -15,7 +15,7 @@
 
 import torch
 
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 
 
 class nnUNetTrainerV2_momentum098(nnUNetTrainerV2):

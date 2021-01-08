@@ -14,8 +14,8 @@
 
 
 import torch
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from training.network_training.nnUNetTrainer import nnUNetTrainer
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from torch.optim import lr_scheduler
 
 

@@ -13,8 +13,8 @@
 #    limitations under the License.
 
 
-from nnunet.training.learning_rate.poly_lr import poly_lr
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from training.learning_rate.poly_lr import poly_lr
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 import matplotlib.pyplot as plt
 
 

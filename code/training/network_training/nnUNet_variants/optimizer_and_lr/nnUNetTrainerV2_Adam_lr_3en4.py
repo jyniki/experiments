@@ -13,7 +13,7 @@
 #    limitations under the License.
 
 
-from nnunet.training.network_training.nnUNet_variants.optimizer_and_lr.nnUNetTrainerV2_Adam import nnUNetTrainerV2_Adam
+from training.network_training.nnUNet_variants.optimizer_and_lr.nnUNetTrainerV2_Adam import nnUNetTrainerV2_Adam
 
 
 class nnUNetTrainerV2_Adam_nnUNetTrainerlr(nnUNetTrainerV2_Adam):

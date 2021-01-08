@@ -12,12 +12,12 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 import torch
-from nnunet.network_architecture.generic_UNet import Generic_UNet
-from nnunet.network_architecture.initialization import InitWeights_He
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
-from nnunet.utilities.nd_softmax import softmax_helper
+from network_architecture.generic_UNet import Generic_UNet
+from network_architecture.initialization import InitWeights_He
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from utils import softmax_helper
 from torch import nn
-from nnunet.network_architecture.custom_modules.mish import Mish
+from network_architecture.custom_modules.mish import Mish
 
 
 class nnUNetTrainerV2_Mish(nnUNetTrainerV2):

@@ -1,9 +1,9 @@
 import torch
-from nnunet.network_architecture.generic_UNet import Generic_UNet
-from nnunet.network_architecture.initialization import InitWeights_He
-from nnunet.training.network_training.nnUNet_variants.data_augmentation.nnUNetTrainerV2_insaneDA import \
+from network_architecture.generic_UNet import Generic_UNet
+from network_architecture.initialization import InitWeights_He
+from training.network_training.nnUNet_variants.data_augmentation.nnUNetTrainerV2_insaneDA import \
     nnUNetTrainerV2_insaneDA
-from nnunet.utilities.nd_softmax import softmax_helper
+from utils import softmax_helper
 from torch import nn
 
 

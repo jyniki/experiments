@@ -13,8 +13,8 @@
 #    limitations under the License.
 
 
-from nnunet.inference.segmentation_export import save_segmentation_nifti_from_softmax
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from inference.segmentation_export import save_segmentation_nifti_from_softmax
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 
 
 class nnUNetTrainerV2_resample33(nnUNetTrainerV2):

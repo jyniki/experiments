@@ -15,10 +15,10 @@ from typing import Tuple
 
 import torch
 
-from nnunet.training.loss_functions.crossentropy import RobustCrossEntropyLoss
-from nnunet.training.network_training.nnUNet_variants.architectural_variants.nnUNetTrainerV2_noDeepSupervision import \
+from training.loss_functions.crossentropy import RobustCrossEntropyLoss
+from training.network_training.nnUNet_variants.architectural_variants.nnUNetTrainerV2_noDeepSupervision import \
     nnUNetTrainerV2_noDeepSupervision
-from nnunet.training.network_training.nnUNet_variants.profiling.nnUNetTrainerV2_2epochs import nnUNetTrainerV2_5epochs
+from training.network_training.nnUNet_variants.profiling.nnUNetTrainerV2_2epochs import nnUNetTrainerV2_5epochs
 from torch.cuda.amp import autocast
 from torch.nn.utils import clip_grad_norm_
 import numpy as np

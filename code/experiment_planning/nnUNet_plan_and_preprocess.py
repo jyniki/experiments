@@ -84,16 +84,14 @@ def main():
     if planner_name3d is not None:
         planner_3d = recursive_find_python_class([search_in], planner_name3d, current_module="experiment_planning")
         if planner_3d is None:
-            raise RuntimeError("Could not find the Planner class %s. Make sure it is located somewhere in "
-                               "nnunet.experiment_planning" % planner_name3d)
+            raise RuntimeError("Could not find the Planner class %s. Make sure it is located somewhere in experiment_planning" % planner_name3d)
     else:
         planner_3d = None
 
     if planner_name2d is not None:
         planner_2d = recursive_find_python_class([search_in], planner_name2d, current_module="experiment_planning")
         if planner_2d is None:
-            raise RuntimeError("Could not find the Planner class %s. Make sure it is located somewhere in "
-                               "nnunet.experiment_planning" % planner_name2d)
+            raise RuntimeError("Could not find the Planner class %s. Make sure it is located somewhere in experiment_planning" % planner_name2d)
     else:
         planner_2d = None
 

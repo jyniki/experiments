@@ -22,18 +22,18 @@ from torch import nn
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.nn.utils import clip_grad_norm_
 
-from nnunet.evaluation.region_based_evaluation import evaluate_regions, get_brats_regions
-from nnunet.network_architecture.generic_UNet import Generic_UNet
-from nnunet.network_architecture.initialization import InitWeights_He
-from nnunet.network_architecture.neural_network import SegmentationNetwork
-from nnunet.training.data_augmentation.default_data_augmentation import get_moreDA_augmentation
-from nnunet.training.dataloading.dataset_loading import unpack_dataset
-from nnunet.training.loss_functions.deep_supervision import MultipleOutputLoss2
-from nnunet.training.loss_functions.dice_loss import DC_and_BCE_loss, get_tp_fp_fn_tn, SoftDiceLoss
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
-from nnunet.training.network_training.nnUNetTrainerV2_DDP import nnUNetTrainerV2_DDP
-from nnunet.utilities.distributed import awesome_allgather_function
-from nnunet.utilities.to_torch import maybe_to_torch, to_cuda
+from evaluation.region_based_evaluation import evaluate_regions, get_brats_regions
+from network_architecture.generic_UNet import Generic_UNet
+from network_architecture.initialization import InitWeights_He
+from network_architecture.neural_network import SegmentationNetwork
+from training.data_augmentation.default_data_augmentation import get_moreDA_augmentation
+from training.dataloading.dataset_loading import unpack_dataset
+from training.loss_functions.deep_supervision import MultipleOutputLoss2
+from training.loss_functions.dice_loss import DC_and_BCE_loss, get_tp_fp_fn_tn, SoftDiceLoss
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from training.network_training.nnUNetTrainerV2_DDP import nnUNetTrainerV2_DDP
+from training.utils import awesome_allgather_function
+from utils import maybe_to_torch, to_cuda
 
 
 class nnUNetTrainerV2BraTSRegions_BN(nnUNetTrainerV2):

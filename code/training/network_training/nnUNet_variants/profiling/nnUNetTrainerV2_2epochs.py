@@ -15,12 +15,12 @@ from typing import Tuple
 import numpy as np
 import torch
 
-from nnunet.training.loss_functions.crossentropy import RobustCrossEntropyLoss
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
-from nnunet.training.network_training.nnUNetTrainerV2_DDP import nnUNetTrainerV2_DDP
-from nnunet.training.network_training.nnUNet_variants.architectural_variants.nnUNetTrainerV2_noDeepSupervision import \
+from training.loss_functions.crossentropy import RobustCrossEntropyLoss
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from training.network_training.nnUNetTrainerV2_DDP import nnUNetTrainerV2_DDP
+from training.network_training.nnUNet_variants.architectural_variants.nnUNetTrainerV2_noDeepSupervision import \
     nnUNetTrainerV2_noDeepSupervision
-from nnunet.utilities.to_torch import maybe_to_torch, to_cuda
+from utils import maybe_to_torch, to_cuda
 from torch.cuda.amp import autocast
 
 

@@ -582,8 +582,8 @@ def get_insaneDA_augmentation(dataloader_train, dataloader_val, patch_size, para
 
 
 if __name__ == "__main__":
-    from nnunet.training.dataloading.dataset_loading import DataLoader3D, load_dataset
-    from nnunet.paths import preprocessing_output_dir
+    from training.dataloading.dataset_loading import DataLoader3D, load_dataset
+    from paths import preprocessing_output_dir
     import os
     import pickle
 

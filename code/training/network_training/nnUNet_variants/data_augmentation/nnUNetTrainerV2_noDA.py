@@ -15,11 +15,11 @@ from typing import Tuple
 
 import numpy as np
 from batchgenerators.utilities.file_and_folder_operations import join, maybe_mkdir_p
-from nnunet.network_architecture.neural_network import SegmentationNetwork
-from nnunet.training.data_augmentation.default_data_augmentation import get_no_augmentation
-from nnunet.training.dataloading.dataset_loading import unpack_dataset, DataLoader3D, DataLoader2D
-from nnunet.training.loss_functions.deep_supervision import MultipleOutputLoss2
-from nnunet.training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from network_architecture.neural_network import SegmentationNetwork
+from training.data_augmentation.default_data_augmentation import get_no_augmentation
+from training.dataloading.dataset_loading import unpack_dataset, DataLoader3D, DataLoader2D
+from training.loss_functions.deep_supervision import MultipleOutputLoss2
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from torch import nn
 
 
