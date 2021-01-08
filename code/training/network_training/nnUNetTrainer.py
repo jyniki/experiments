@@ -17,7 +17,7 @@ from network_architecture.neural_network import SegmentationNetwork
 from preprocessing.connected_components import determine_postprocessing
 from training.data_augmentation.default_data_augmentation import default_3D_augmentation_params, default_2D_augmentation_params, get_default_augmentation, get_patch_size
 from training.dataloading.dataset_loading import load_dataset, DataLoader3D, DataLoader2D, unpack_dataset
-from training.loss_functions.dice_loss import DC_and_CE_loss
+from loss_functions.dice_loss import DC_and_CE_loss
 from training.network_training.network_trainer import NetworkTrainer
 from utils import softmax_helper, sum_tensor, recursive_find_python_class
 from torch import nn
