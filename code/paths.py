@@ -7,7 +7,7 @@ Description: change to local
 import yaml   
 from batchgenerators.utilities.file_and_folder_operations import maybe_mkdir_p, join
 
-config = yaml.load(open('./configs.yaml', 'r'), Loader=yaml.FullLoader)
+config = yaml.load(open('./configs/default.yaml', 'r'), Loader=yaml.FullLoader)
 default_plans_identifier = config['default_plans_identifier']
 default_data_identifier = config['default_data_identifier']
 default_trainer = config['default_trainer']

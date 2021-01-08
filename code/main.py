@@ -11,11 +11,13 @@ import yaml
 import argparse
 
 def pipeline():
-    config = yaml.load(open('./configs.yaml', 'r'), Loader=yaml.FullLoader)
     parser = argparse.ArgumentParser()
+    parser.add_argument("-y", "--yaml", type=str, default='./configs/configs.yaml')
     parser.add_argument("-o", "--operation", type=int, nargs="+", default=0)
+    
     args = parser.parse_args()
     operation_type = args.operation
+    config = yaml.load(open(args.yaml, 'r'), Loader=yaml.FullLoader)
     if 0 in operation_type:
         print( "operation_type: \n"
                 "   1 -- convert_decathlon \n"
@@ -41,7 +43,6 @@ def pipeline():
     
     if 3 in operation_type:
         from run import run_training, run_training_DP, run_training_DDP
-        config = yaml.load(open('./configs.yaml', 'r'), Loader=yaml.FullLoader)            
         task = config['training_args']['task_id']
         fold = config['training_args']['fold']
         network = config['training_args']['network']

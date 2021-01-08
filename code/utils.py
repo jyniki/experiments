@@ -92,7 +92,6 @@ def to_cuda(data, non_blocking=True, gpu_id=0):
     else:
         data = data.cuda(gpu_id, non_blocking=True)
     return data
-
 class no_op(object):
     def __enter__(self):
         pass
@@ -135,7 +134,6 @@ def to_one_hot(seg, all_seg_labels=None):
     for i, l in enumerate(all_seg_labels):
         result[i][seg == l] = 1
     return result
-
 
 def get_output_folder_name(model: str, task: str = None, trainer: str = None, plans: str = None, fold: int = None,
                            overwrite_training_output_dir: str = None):
