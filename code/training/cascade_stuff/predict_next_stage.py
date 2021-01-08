@@ -9,10 +9,7 @@ import numpy as np
 from batchgenerators.utilities.file_and_folder_operations import *
 from preprocessing.preprocessing import resample_data_or_seg
 from batchgenerators.utilities.file_and_folder_operations import maybe_mkdir_p
-from run.default_configuration import get_default_configuration
 from multiprocessing import Pool
-from utils import recursive_find_python_class
-from training.network_training.nnUNetTrainer import nnUNetTrainer
 
 
 def resample_and_save(predicted, target_shape, output_file, force_separate_z=False,
