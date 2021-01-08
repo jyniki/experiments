@@ -7,7 +7,8 @@ from typing import Tuple
 
 import numpy as np
 import torch
-from network_architecture.generic_modular_residual_UNet import FabiansUNet, get_default_network_config
+from network_architecture.generic_modular_residual_UNet import FabiansUNet
+from training.network_training.nnUNet_variants.architectural_variants.architectural_config import get_default_network_config
 from network_architecture.initialization import InitWeights_He
 from training.network_training.nnUNetTrainer import nnUNetTrainer
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
@@ -87,8 +88,3 @@ class nnUNetTrainerV2_ResencUNet(nnUNetTrainerV2):
         self.network.decoder.deep_supervision = ds
         return ret
 
-
-nnUNetTrainerV2_ResencUNet_copy1 = nnUNetTrainerV2_ResencUNet
-nnUNetTrainerV2_ResencUNet_copy2 = nnUNetTrainerV2_ResencUNet
-nnUNetTrainerV2_ResencUNet_copy3 = nnUNetTrainerV2_ResencUNet
-nnUNetTrainerV2_ResencUNet_copy4 = nnUNetTrainerV2_ResencUNet
