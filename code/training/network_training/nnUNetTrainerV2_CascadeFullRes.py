@@ -3,7 +3,7 @@ from time import sleep
 import matplotlib
 from configuration import default_num_threads
 from preprocessing.connected_components import determine_postprocessing
-from training.data_augmentation.default_data_augmentation import get_default_augmentation, get_moreDA_augmentation
+from training.data_augmentation.default_data_augmentation import get_moreDA_augmentation
 from training.dataloading.dataset_loading import DataLoader3D, unpack_dataset
 from evaluation.evaluator import aggregate_scores
 from network_architecture.neural_network import SegmentationNetwork
@@ -15,9 +15,7 @@ from training.loss_functions.deep_supervision import MultipleOutputLoss2
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from utils import to_one_hot
 import shutil
-
 from torch import nn
-
 matplotlib.use("agg")
 
 

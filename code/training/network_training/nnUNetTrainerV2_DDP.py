@@ -3,14 +3,12 @@ from collections import OrderedDict
 from multiprocessing import Pool
 from time import sleep
 from typing import Tuple
-
 import numpy as np
 import torch
 import torch.distributed as dist
 from torch.cuda.amp import autocast
 from torch.nn.parallel import DistributedDataParallel as DDP
-from batchgenerators.utilities.file_and_folder_operations import maybe_mkdir_p, join, subfiles, isfile, load_pickle, \
-    save_json
+from batchgenerators.utilities.file_and_folder_operations import maybe_mkdir_p, join, subfiles, isfile, load_pickle, save_json
 
 from configuration import default_num_threads
 from evaluation.evaluator import aggregate_scores
@@ -208,7 +206,7 @@ class nnUNetTrainerV2_DDP(nnUNetTrainerV2):
             if do_backprop:
                 self.amp_grad_scaler.scale(l).backward()
                 self.amp_grad_scaler.unscale_(self.optimizer)
-                torch.nn.utils.clip_grad_norm_(self.network.parameters(), 12)
+                clip_grad_norm_(self.network.parameters(), 12)
                 self.amp_grad_scaler.step(self.optimizer)
                 self.amp_grad_scaler.update()
         else:
@@ -218,7 +216,7 @@ class nnUNetTrainerV2_DDP(nnUNetTrainerV2):
 
             if do_backprop:
                 l.backward()
-                torch.nn.utils.clip_grad_norm_(self.network.parameters(), 12)
+                clip_grad_norm_(self.network.parameters(), 12)
                 self.optimizer.step()
 
         if run_online_evaluation:

@@ -1,8 +1,12 @@
+'''
+Author: Niki
+Date: 2021-01-08 21:45:51
+Description: 
+'''
 import torch
 from network_architecture.generic_UNet import Generic_UNet
 from network_architecture.initialization import InitWeights_He
-from training.network_training.nnUNet_variants.data_augmentation.nnUNetTrainerV2_insaneDA import \
-    nnUNetTrainerV2_insaneDA
+from training.network_training.nnUNet_variants.data_augmentation.nnUNetTrainerV2_insaneDA import nnUNetTrainerV2_insaneDA
 from utils import softmax_helper
 from torch import nn
 
