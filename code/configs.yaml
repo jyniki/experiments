@@ -1,10 +1,10 @@
 ## Template 
 DATASET_DIR: /data0/JY/project/algorithm/nnUNet/DATASET
 output_identifier: nnUNet
-default_plans_identifier: "nnUNetPlansv2.1"
-default_data_identifier: 'nnUNet'
-default_trainer: "nnUNetTrainerV2"
-default_cascade_trainer: "nnUNetTrainerV2CascadeFullRes"
+default_plans_identifier: nnUNetPlansv2.1
+default_data_identifier: nnUNet
+default_trainer: nnUNetTrainerV2
+default_cascade_trainer: nnUNetTrainerV2CascadeFullRes
 nnUNet_def_n_proc: 8
 
 convert_decathlon:
