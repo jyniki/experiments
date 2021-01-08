@@ -216,22 +216,3 @@ def maybe_add_0000_to_all_niigz(folder):
         n = remove_trailing_slash(n)
         if not n.endswith('_0000.nii.gz'):
             os.rename(n, n[:-7] + '_0000.nii.gz')
-
-def get_output_folder_name(model: str, task: str = None, trainer: str = None, plans: str = None, fold: int = None,
-                           overwrite_training_output_dir: str = None):
-  
-    assert model in ["2d", "3d_cascade_fullres", '3d_fullres', '3d_lowres']
-
-    if overwrite_training_output_dir is not None:
-        tr_dir = overwrite_training_output_dir
-    else:
-        tr_dir = network_training_output_dir
-
-    current = join(tr_dir, model)
-    if task is not None:
-        current = join(current, task)
-        if trainer is not None and plans is not None:
-            current = join(current, trainer + "__" + plans)
-            if fold is not None:
-                current = join(current, "fold_%d" % fold)
-    return current

@@ -5,9 +5,8 @@ Description:
 '''
 import json
 import numpy as np
-from batchgenerators.utilities.file_and_folder_operations import subfiles
+from batchgenerators.utilities.file_and_folder_operations import subfiles, join
 from collections import OrderedDict
-
 
 def foreground_mean(filename):
     with open(filename, 'r') as f:

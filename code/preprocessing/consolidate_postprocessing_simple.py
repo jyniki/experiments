@@ -5,8 +5,7 @@ Description:
 '''
 import argparse
 from preprocessing.consolidate_postprocessing import consolidate_folds
-from preprocessing.utils import get_output_folder_name
-from utils import convert_id_to_task_name
+from utils import convert_id_to_task_name, get_output_folder_name
 from paths import default_cascade_trainer, default_trainer, default_plans_identifier
 
 
