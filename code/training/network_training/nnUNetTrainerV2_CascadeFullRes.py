@@ -11,7 +11,7 @@ from paths import network_training_output_dir
 from inference.segmentation_export import save_segmentation_nifti_from_softmax
 from batchgenerators.utilities.file_and_folder_operations import *
 import numpy as np
-from training.loss_functions.deep_supervision import MultipleOutputLoss2
+from loss_functions.deep_supervision import MultipleOutputLoss2
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from utils import to_one_hot
 import shutil

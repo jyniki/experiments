@@ -88,12 +88,7 @@ class nnUNetTrainer(NetworkTrainer):
         self.regions_class_order = None
 
     def update_fold(self, fold):
-        """
-        used to swap between folds for inference (ensemble of models from cross-validation)
-        DO NOT USE DURING TRAINING AS THIS WILL NOT UPDATE THE DATASET SPLIT AND THE DATA AUGMENTATION GENERATORS
-        :param fold:
-        :return:
-        """
+    
         if fold is not None:
             if isinstance(fold, str):
                 assert fold == "all", "if self.fold is a string then it must be \'all\'"
