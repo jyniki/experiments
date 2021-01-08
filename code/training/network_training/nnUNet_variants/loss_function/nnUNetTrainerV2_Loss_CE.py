@@ -3,7 +3,7 @@ Author: Niki
 Date: 2021-01-08 11:00:41
 Description: 
 '''
-from training.loss_functions.crossentropy import RobustCrossEntropyLoss
+from loss_functions.crossentropy import RobustCrossEntropyLoss
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 
 

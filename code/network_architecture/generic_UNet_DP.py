@@ -6,8 +6,8 @@ Description:
 import torch
 from network_architecture.generic_UNet import Generic_UNet
 from network_architecture.initialization import InitWeights_He
-from training.loss_functions.crossentropy import RobustCrossEntropyLoss
-from training.loss_functions.dice_loss import get_tp_fp_fn_tn
+from loss_functions.crossentropy import RobustCrossEntropyLoss
+from loss_functions.dice_loss import get_tp_fp_fn_tn
 from utils import softmax_helper, sum_tensor
 from torch import nn
 

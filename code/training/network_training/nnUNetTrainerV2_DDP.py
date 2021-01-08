@@ -17,8 +17,8 @@ from network_architecture.neural_network import SegmentationNetwork
 from preprocessing.connected_components import determine_postprocessing
 from training.data_augmentation.default_data_augmentation import get_moreDA_augmentation
 from training.dataloading.dataset_loading import unpack_dataset
-from training.loss_functions.crossentropy import RobustCrossEntropyLoss
-from training.loss_functions.dice_loss import get_tp_fp_fn_tn
+from loss_functions.crossentropy import RobustCrossEntropyLoss
+from loss_functions.dice_loss import get_tp_fp_fn_tn
 from training.network_training.nnUNetTrainer import nnUNetTrainer
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from training.utils import awesome_allgather_function
