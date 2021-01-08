@@ -489,6 +489,3 @@ def find_2d_configuration():
     # This does not matter because we are using mixed precision training now, so a rough memory approximation is OK
 
 
-if __name__ == "__main__":
-    pass
-

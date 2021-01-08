@@ -17,7 +17,7 @@ from torch import nn
 from torch.cuda.amp import autocast
 from training.learning_rate.poly_lr import poly_lr
 from batchgenerators.utilities.file_and_folder_operations import *
-
+from torch.nn.utils import clip_grad_norm_
 
 class nnUNetTrainerV2(nnUNetTrainer):
     """
@@ -232,7 +232,7 @@ class nnUNetTrainerV2(nnUNetTrainer):
             if do_backprop:
                 self.amp_grad_scaler.scale(l).backward()
                 self.amp_grad_scaler.unscale_(self.optimizer)
-                torch.nn.utils.clip_grad_norm_(self.network.parameters(), 12)
+                clip_grad_norm_(self.network.parameters(), 12)
                 self.amp_grad_scaler.step(self.optimizer)
                 self.amp_grad_scaler.update()
         else:
@@ -242,7 +242,7 @@ class nnUNetTrainerV2(nnUNetTrainer):
 
             if do_backprop:
                 l.backward()
-                torch.nn.utils.clip_grad_norm_(self.network.parameters(), 12)
+                clip_grad_norm_(self.network.parameters(), 12)
                 self.optimizer.step()
 
         if run_online_evaluation:

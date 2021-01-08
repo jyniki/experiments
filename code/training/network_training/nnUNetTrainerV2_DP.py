@@ -180,7 +180,7 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
             if do_backprop:
                 self.amp_grad_scaler.scale(l).backward()
                 self.amp_grad_scaler.unscale_(self.optimizer)
-                torch.nn.utils.clip_grad_norm_(self.network.parameters(), 12)
+                clip_grad_norm_(self.network.parameters(), 12)
                 self.amp_grad_scaler.step(self.optimizer)
                 self.amp_grad_scaler.update()
         else:
@@ -195,7 +195,7 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
 
             if do_backprop:
                 l.backward()
-                torch.nn.utils.clip_grad_norm_(self.network.parameters(), 12)
+                clip_grad_norm_(self.network.parameters(), 12)
                 self.optimizer.step()
 
         return l.detach().cpu().numpy()
