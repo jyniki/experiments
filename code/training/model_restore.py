@@ -21,10 +21,7 @@ def restore_model(pkl_file, checkpoint=None, train=False, fp16=None):
                            "trainer can be located in any directory within trainig.network_training (search is recursive)."
                            "\nDebug info: \ncheckpoint file: %s\nName of trainer: %s " % (checkpoint, name))
     
-    assert issubclass(tr, nnUNetTrainer), "The network trainer was found but is not a subclass of nnUNetTrainer. " \
-                                          "Please make it so!"
-
-    # ToDo Fabian make saves use kwargs, please...
+    assert issubclass(tr, nnUNetTrainer), "The network trainer was found but is not a subclass of nnUNetTrainer. Please make it so!"
 
     trainer = tr(*init)
 

@@ -15,6 +15,7 @@ default_cascade_trainer = config['default_cascade_trainer']
 
 DATASET_DIR = config['DATASET_DIR']
 my_output_identifier = config['output_identifier']
+pretrain_identifier = config['pretrain_identifier']
 base = join(DATASET_DIR,"nnUNet_raw") if DATASET_DIR else None
 preprocessing_output_dir = join(DATASET_DIR, "nnUNet_preprocessed") if DATASET_DIR else None
 network_training_output_dir_base = join(DATASET_DIR, "nnUNet_trained_models") if DATASET_DIR else None

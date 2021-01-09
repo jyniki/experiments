@@ -7,7 +7,6 @@ import matplotlib
 import numpy as np
 import torch
 from batchgenerators.utilities.file_and_folder_operations import *
-
 from configuration import default_num_threads
 from evaluation.evaluator import aggregate_scores
 from inference.segmentation_export import save_segmentation_nifti_from_softmax
@@ -460,10 +459,6 @@ class nnUNetTrainer(NetworkTrainer):
                  save_softmax: bool = True, use_gaussian: bool = True, overwrite: bool = True,
                  validation_folder_name: str = 'validation_raw', debug: bool = False, all_in_gpu: bool = False,
                  segmentation_export_kwargs: dict = None):
-        """
-        if debug=True then the temporary files generated for postprocessing determination will be kept
-        """
-
         current_mode = self.network.training
         self.network.eval()
 
@@ -541,13 +536,6 @@ class nnUNetTrainer(NetworkTrainer):
                 else:
                     softmax_fname = None
 
-                """There is a problem with python process communication that prevents us from communicating obejcts
-                larger than 2 GB between processes (basically when the length of the pickle string that will be sent is
-                communicated by the multiprocessing.Pipe object then the placeholder (\%i I think) does not allow for long
-                enough strings (lol). This could be fixed by changing i to l (for long) but that would require manually
-                patching system python code. We circumvent that problem here by saving softmax_pred to a npy file that will
-                then be read (and finally deleted) by the Process. save_segmentation_nifti_from_softmax can take either
-                filename or np.ndarray and will handle this automatically"""
                 if np.prod(softmax_pred.shape) > (2e9 / 4 * 0.85):  # *0.85 just to be save
                     np.save(join(output_folder, fname + ".npy"), softmax_pred)
                     softmax_pred = join(output_folder, fname + ".npy")
@@ -558,12 +546,10 @@ class nnUNetTrainer(NetworkTrainer):
                                                            None, None,
                                                            softmax_fname, None, force_separate_z,
                                                            interpolation_order_z),
-                                                          )
-                                                         )
+                                                          ))
                                )
 
-            pred_gt_tuples.append([join(output_folder, fname + ".nii.gz"),
-                                   join(self.gt_niftis_folder, fname + ".nii.gz")])
+            pred_gt_tuples.append([join(output_folder, fname + ".nii.gz"), join(self.gt_niftis_folder, fname + ".nii.gz")])
 
         _ = [i.get() for i in results]
         self.print_to_log_file("finished prediction")
@@ -578,20 +564,12 @@ class nnUNetTrainer(NetworkTrainer):
                              json_author="Fabian",
                              json_task=task, num_threads=default_num_threads)
 
-        # in the old nnunet we would stop here. Now we add a postprocessing. This postprocessing can remove everything
-        # except the largest connected component for each class. To see if this improves results, we do this for all
-        # classes and then rerun the evaluation. Those classes for which this resulted in an improved dice score will
-        # have this applied during inference as well
         self.print_to_log_file("determining postprocessing")
+        
+        # output in final_subf_name("validation_raw__postprocessed")
         determine_postprocessing(self.output_folder, self.gt_niftis_folder, validation_folder_name,
                                  final_subf_name=validation_folder_name + "_postprocessed", debug=debug)
-        # after this the final predictions for the vlaidation set can be found in validation_folder_name_base + "_postprocessed"
-        # They are always in that folder, even if no postprocessing as applied!
 
-        # detemining postprocesing on a per-fold basis may be OK for this fold but what if another fold finds another
-        # postprocesing to be better? In this case we need to consolidate. At the time the consolidation is going to be
-        # done we won't know what self.gt_niftis_folder was, so now we copy all the niftis into a separate folder to
-        # be used later
         gt_nifti_folder = join(self.output_folder_base, "gt_niftis")
         maybe_mkdir_p(gt_nifti_folder)
         for f in subfiles(self.gt_niftis_folder, suffix=".nii.gz"):
@@ -647,8 +625,7 @@ class nnUNetTrainer(NetworkTrainer):
         self.all_val_eval_metrics.append(np.mean(global_dc_per_class))
 
         self.print_to_log_file("Average global foreground Dice:", str(global_dc_per_class))
-        self.print_to_log_file("(interpret this as an estimate for the Dice of the different classes. This is not "
-                               "exact.)")
+        self.print_to_log_file("(interpret this as an estimate for the Dice of the different classes. This is not exact.)")
 
         self.online_eval_foreground_dc = []
         self.online_eval_tp = []

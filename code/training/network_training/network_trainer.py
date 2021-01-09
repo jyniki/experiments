@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold
 from torch import nn
 from torch.cuda.amp import GradScaler, autocast
 from torch.optim.lr_scheduler import _LRScheduler
-
+from paths import pretrain_identifier, my_output_identifier
 matplotlib.use("agg")
 from time import time, sleep
 import torch
@@ -23,7 +23,8 @@ from datetime import datetime
 from tqdm import trange
 from utils import maybe_to_torch, to_cuda
 
-
+# TODO:
+# write a interface to NetworkTrainer
 class NetworkTrainer(object):
     def __init__(self, deterministic=True, fp16=False):
         self.fp16 = fp16
@@ -98,20 +99,8 @@ class NetworkTrainer(object):
 
     @abstractmethod
     def initialize(self, training=True):
-        """
-        create self.output_folder
-
-        modify self.output_folder if you are doing cross-validation (one folder per fold)
-
-        set self.tr_gen and self.val_gen
-
-        call self.initialize_network and self.initialize_optimizer_and_scheduler (important!)
-
-        finally set self.was_initialized to True
-        :param training:
-        :return:
-        """
-
+       pass
+   
     @abstractmethod
     def load_dataset(self):
         pass
@@ -256,23 +245,40 @@ class NetworkTrainer(object):
         torch.save(save_this, fname)
         self.print_to_log_file("done, saving took %.2f seconds" % (time() - start_time))
 
-    def load_best_checkpoint(self, train=True):
+    def load_best_checkpoint(self, train=True, pretrain=False):
         if self.fold is None:
             raise RuntimeError("Cannot load best checkpoint if self.fold is None")
-        if isfile(join(self.output_folder, "model_best.model")):
-            self.load_checkpoint(join(self.output_folder, "model_best.model"), train=train)
+        
+        if not pretrain:
+            if isfile(join(self.output_folder, "model_best.model")):
+                self.load_checkpoint(join(self.output_folder, "model_best.model"), train=train)
+            else:
+                self.print_to_log_file("WARNING! model_best.model does not exist! Cannot load best checkpoint. Falling back to load_latest_checkpoint")
+                self.load_latest_checkpoint(train)
         else:
-            self.print_to_log_file("WARNING! model_best.model does not exist! Cannot load best checkpoint. Falling "
-                                   "back to load_latest_checkpoint")
-            self.load_latest_checkpoint(train)
+            pretrain_path = (self.output_folder).replace(my_output_identifier,pretrain_identifier)
+            if isfile(join(pretrain_path, "model_best.model")):
+                self.load_checkpoint(join(pretrain_path, "model_best.model"), train=train)
+            else:
+                self.print_to_log_file("WARNING! model_best.model does not exist! Cannot load best checkpoint. Falling back to load_latest_checkpoint")
+                self.load_latest_checkpoint(train,pretrain=True)
 
-    def load_latest_checkpoint(self, train=True):
-        if isfile(join(self.output_folder, "model_final_checkpoint.model")):
-            return self.load_checkpoint(join(self.output_folder, "model_final_checkpoint.model"), train=train)
-        if isfile(join(self.output_folder, "model_latest.model")):
-            return self.load_checkpoint(join(self.output_folder, "model_latest.model"), train=train)
-        if isfile(join(self.output_folder, "model_best.model")):
-            return self.load_best_checkpoint(train)
+    def load_latest_checkpoint(self, train=True, pretrain=False):
+        if not pretrain:
+            if isfile(join(self.output_folder, "model_final_checkpoint.model")):
+                return self.load_checkpoint(join(self.output_folder, "model_final_checkpoint.model"), train=train)
+            if isfile(join(self.output_folder, "model_latest.model")):
+                return self.load_checkpoint(join(self.output_folder, "model_latest.model"), train=train)
+            if isfile(join(self.output_folder, "model_best.model")):
+                return self.load_best_checkpoint(train)
+        else:
+            pretrain_path = (self.output_folder).replace(my_output_identifier,pretrain_identifier)
+            if isfile(join(pretrain_path, "model_final_checkpoint.model")):
+                return self.load_checkpoint(join(pretrain_path, "model_final_checkpoint.model"), train=train)
+            if isfile(join(pretrain_path, "model_latest.model")):
+                return self.load_checkpoint(join(pretrain_path, "model_latest.model"), train=train)
+            if isfile(join(pretrain_path, "model_best.model")):
+                return self.load_best_checkpoint(train)
         raise RuntimeError("No checkpoint found")
 
     def load_checkpoint(self, fname, train=True):

@@ -126,7 +126,6 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
     if not overwrite_existing:
         print("number of cases:", len(list_of_lists))
         not_done_idx = [i for i, j in enumerate(cleaned_output_files) if not isfile(j)]
-
         cleaned_output_files = [cleaned_output_files[i] for i in not_done_idx]
         list_of_lists = [list_of_lists[i] for i in not_done_idx]
         if segs_from_prev_stage is not None:
@@ -204,8 +203,7 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
 
         results.append(pool.starmap_async(save_segmentation_nifti_from_softmax,
                                           ((softmax_mean, output_filename, dct, interpolation_order, region_class_order,
-                                            None, None,npz_file, None, force_separate_z, interpolation_order_z),)
-                                          ))
+                                            None, None,npz_file, None, force_separate_z, interpolation_order_z),)))
 
     print("inference done. Now waiting for the segmentation export to finish...")
     _ = [i.get() for i in results]

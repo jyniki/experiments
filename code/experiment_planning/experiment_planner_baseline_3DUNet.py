@@ -127,23 +127,7 @@ class ExperimentPlanner(object):
 
     def get_properties_for_stage(self, current_spacing, original_spacing, original_shape, num_cases,
                                  num_modalities, num_classes):
-        """
-        Computation of input patch size starts out with the new median shape (in voxels) of a dataset. This is
-        opposed to prior experiments where I based it on the median size in mm. The rationale behind this is that
-        for some organ of interest the acquisition method will most likely be chosen such that the field of view and
-        voxel resolution go hand in hand to show the doctor what they need to see. This assumption may be violated
-        for some modalities with anisotropy (cine MRI) but we will have t live with that. In future experiments I
-        will try to 1) base input patch size match aspect ratio of input size in mm (instead of voxels) and 2) to
-        try to enforce that we see the same 'distance' in all directions (try to maintain equal size in mm of patch)
-
-        The patches created here attempt keep the aspect ratio of the new_median_shape
-
-        :param current_spacing:
-        :param original_spacing:
-        :param original_shape:
-        :param num_cases:
-        :return:
-        """
+      
         new_median_shape = np.round(original_spacing / current_spacing * original_shape).astype(int)
         dataset_num_voxels = np.prod(new_median_shape) * num_cases
 

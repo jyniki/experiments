@@ -77,7 +77,8 @@ def pipeline():
         else:
             print("training_single_gpu")
             network_trainer = config['training_single']['network_trainer']
-            run_training.train(network,network_trainer,task,fold,disable_saving, npz_flag, validation_only,continue_training)
+            using_pretrain = config['training_single']['using_pretrain']
+            run_training.train(network,network_trainer,task,fold,disable_saving, npz_flag, validation_only,continue_training,using_pretrain)
             
     if 4 in operation_type:
         print("inference_parse")

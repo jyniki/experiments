@@ -10,19 +10,7 @@ class ResidualUNetEncoder(nn.Module):
     def __init__(self, input_channels, base_num_features, num_blocks_per_stage, feat_map_mul_on_downscale,
                  pool_op_kernel_sizes, conv_kernel_sizes, props, default_return_skips=True,
                  max_num_features=480, block=BasicResidualBlock):
-        """
-        Following UNet building blocks can be added by utilizing the properties this class exposes (TODO)
-
-        this one includes the bottleneck layer!
-
-        :param input_channels:
-        :param base_num_features:
-        :param num_blocks_per_stage:
-        :param feat_map_mul_on_downscale:
-        :param pool_op_kernel_sizes:
-        :param conv_kernel_sizes:
-        :param props:
-        """
+      
         super(ResidualUNetEncoder, self).__init__()
 
         self.default_return_skips = default_return_skips

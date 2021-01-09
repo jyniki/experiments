@@ -121,8 +121,7 @@ def determine_postprocessing(base, gt_labels_folder, raw_subfolder_name="validat
     :return:
     """
     # lets see what classes are in the dataset
-    classes = [int(i) for i in load_json(join(base, raw_subfolder_name, "summary.json"))['results']['mean'].keys() if
-               int(i) != 0]
+    classes = [int(i) for i in load_json(join(base, raw_subfolder_name, "summary.json"))['results']['mean'].keys() if int(i) != 0]
 
     folder_all_classes_as_fg = join(base, temp_folder + "_allClasses")
     folder_per_class = join(base, temp_folder + "_perClass")
@@ -135,8 +134,7 @@ def determine_postprocessing(base, gt_labels_folder, raw_subfolder_name="validat
     # multiprocessing rules
     p = Pool(processes)
 
-    assert isfile(join(base, raw_subfolder_name, "summary.json")), "join(base, raw_subfolder_name) does not " \
-                                                                   "contain a summary.json"
+    assert isfile(join(base, raw_subfolder_name, "summary.json")), "join(base, raw_subfolder_name) does not contain a summary.json"
 
     # these are all the files we will be dealing with
     fnames = subfiles(join(base, raw_subfolder_name), suffix=".nii.gz", join=False)
@@ -358,8 +356,7 @@ def determine_postprocessing(base, gt_labels_folder, raw_subfolder_name="validat
             (predicted_segmentation, output_file, pp_results['for_which_classes'],
              pp_results['min_valid_object_sizes']),)))
 
-        pred_gt_tuples.append([output_file,
-                               join(gt_labels_folder, f)])
+        pred_gt_tuples.append([output_file, join(gt_labels_folder, f)])
 
     _ = [i.get() for i in results]
     # evaluate postprocessed predictions

@@ -26,6 +26,7 @@ def get_foreground_mean(results):
 
 
 def main():
+    # default_trainer: nnUNetTrainerV2, can change to nnUNetTrainerV2_DP or nnUNetTrainerV2_DDP
     import argparse
     parser = argparse.ArgumentParser(usage="This is intended to identify the best model based on the five fold "
                                            "cross-validation. Running this script requires all models to have been run "

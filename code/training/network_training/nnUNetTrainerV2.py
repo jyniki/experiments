@@ -1,6 +1,5 @@
 from collections import OrderedDict
 from typing import Tuple
-
 import numpy as np
 import torch
 from loss_functions.deep_supervision import MultipleOutputLoss2
@@ -20,10 +19,6 @@ from batchgenerators.utilities.file_and_folder_operations import *
 from torch.nn.utils import clip_grad_norm_
 
 class nnUNetTrainerV2(nnUNetTrainer):
-    """
-    Info for Fabian: same as internal nnUNetTrainerV2_2
-    """
-
     def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
                  unpack_data=True, deterministic=True, fp16=False):
         super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
@@ -32,7 +27,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
         self.initial_lr = 1e-2
         self.deep_supervision_scales = None
         self.ds_loss_weights = None
-
         self.pin_memory = True
 
     def initialize(self, training=True, force_load_plans=False):
@@ -165,9 +159,7 @@ class nnUNetTrainerV2(nnUNetTrainer):
                  step_size: float = 0.5, save_softmax: bool = True, use_gaussian: bool = True, overwrite: bool = True,
                  validation_folder_name: str = 'validation_raw', debug: bool = False, all_in_gpu: bool = False,
                  segmentation_export_kwargs: dict = None):
-        """
-        We need to wrap this because we need to enforce self.network.do_ds = False for prediction
-        """
+
         ds = self.network.do_ds
         self.network.do_ds = False
         ret = super().validate(do_mirroring=do_mirroring, use_sliding_window=use_sliding_window, step_size=step_size,
@@ -184,9 +176,7 @@ class nnUNetTrainerV2(nnUNetTrainer):
                                                          use_gaussian: bool = True, pad_border_mode: str = 'constant',
                                                          pad_kwargs: dict = None, all_in_gpu: bool = False,
                                                          verbose: bool = True, mixed_precision=True) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        We need to wrap this because we need to enforce self.network.do_ds = False for prediction
-        """
+   
         ds = self.network.do_ds
         self.network.do_ds = False
         ret = super().predict_preprocessed_data_return_seg_and_softmax(data,
@@ -202,14 +192,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
         return ret
 
     def run_iteration(self, data_generator, do_backprop=True, run_online_evaluation=False):
-        """
-        gradient clipping improves training stability
-
-        :param data_generator:
-        :param do_backprop:
-        :param run_online_evaluation:
-        :return:
-        """
         data_dict = next(data_generator)
         data = data_dict['data']
         target = data_dict['target']
@@ -254,14 +236,10 @@ class nnUNetTrainerV2(nnUNetTrainer):
 
     def do_split(self):
         """
-        The default split is a 5 fold CV on all available training cases. nnU-Net will create a split (it is seeded,
-        so always the same) and save it as splits_final.pkl file in the preprocessed data directory.
-        Sometimes you may want to create your own split for various reasons. For this you will need to create your own
-        splits_final.pkl file. If this file is present, nnU-Net is going to use it and whatever splits are defined in
-        it. You can create as many splits in this file as you want. Note that if you define only 4 splits (fold 0-3)
-        and then set fold=4 when training (that would be the fifth split), nnU-Net will print a warning and proceed to
-        use a random 80:20 data split.
-        :return:
+        The default split is a 5 fold CV on all available training cases.
+        nnU-Net will create a split and save it as splits_final.pkl file in the preprocessed data directory.
+        if you define only 4 splits (fold 0-3) and then set fold=4 when training (that would be the fifth split), 
+        nnU-Net will print a warning and proceed to use a random 80:20 data split.
         """
         if self.fold == "all":
             # if fold==all then we use all images for training and validation
@@ -309,17 +287,7 @@ class nnUNetTrainerV2(nnUNetTrainer):
             self.dataset_val[i] = self.dataset[i]
 
     def setup_DA_params(self):
-        """
-        - we increase roation angle from [-15, 15] to [-30, 30]
-        - scale range is now (0.7, 1.4), was (0.85, 1.25)
-        - we don't do elastic deformation anymore
-
-        :return:
-        """
-
-        self.deep_supervision_scales = [[1, 1, 1]] + list(list(i) for i in 1 / np.cumprod(
-            np.vstack(self.net_num_pool_op_kernel_sizes), axis=0))[:-1]
-
+        self.deep_supervision_scales = [[1, 1, 1]] + list(list(i) for i in 1 / np.cumprod(np.vstack(self.net_num_pool_op_kernel_sizes), axis=0))[:-1]
         if self.threeD:
             self.data_aug_params = default_3D_augmentation_params
             self.data_aug_params['rotation_x'] = (-30. / 360 * 2. * np.pi, 30. / 360 * 2. * np.pi)
@@ -328,10 +296,8 @@ class nnUNetTrainerV2(nnUNetTrainer):
             if self.do_dummy_2D_aug:
                 self.data_aug_params["dummy_2D"] = True
                 self.print_to_log_file("Using dummy2d data augmentation")
-                self.data_aug_params["elastic_deform_alpha"] = \
-                    default_2D_augmentation_params["elastic_deform_alpha"]
-                self.data_aug_params["elastic_deform_sigma"] = \
-                    default_2D_augmentation_params["elastic_deform_sigma"]
+                self.data_aug_params["elastic_deform_alpha"] = default_2D_augmentation_params["elastic_deform_alpha"]
+                self.data_aug_params["elastic_deform_sigma"] = default_2D_augmentation_params["elastic_deform_sigma"]
                 self.data_aug_params["rotation_x"] = default_2D_augmentation_params["rotation_x"]
         else:
             self.do_dummy_2D_aug = False
@@ -359,7 +325,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
         self.data_aug_params["do_elastic"] = False
         self.data_aug_params['selected_seg_channels'] = [0]
         self.data_aug_params['patch_size_for_spatialtransform'] = patch_size_for_spatialtransform
-
         self.data_aug_params["num_cached_per_thread"] = 2
 
     def maybe_update_lr(self, epoch=None):
@@ -368,9 +333,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
 
         (maybe_update_lr is called in on_epoch_end which is called before epoch is incremented.
         herefore we need to do +1 here)
-
-        :param epoch:
-        :return:
         """
         if epoch is None:
             ep = self.epoch + 1
@@ -407,8 +369,7 @@ class nnUNetTrainerV2(nnUNetTrainer):
         we also need to make sure deep supervision in the network is enabled for training, thus the wrapper
         :return:
         """
-        self.maybe_update_lr(self.epoch)  # if we dont overwrite epoch then self.epoch+1 is used which is not what we
-        # want at the start of the training
+        self.maybe_update_lr(self.epoch)  
         ds = self.network.do_ds
         self.network.do_ds = True
         ret = super().run_training()

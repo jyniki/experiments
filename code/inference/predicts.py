@@ -5,7 +5,8 @@ from batchgenerators.utilities.file_and_folder_operations import join, isdir
 from utils import convert_id_to_task_name
 
 def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, disable_mixed_precision):
-    trainer_class_name = default_trainer
+    # default_trainer: nnUNetTrainerV2, can change to nnUNetTrainerV2_DP or nnUNetTrainerV2_DDP
+    trainer_class_name = default_trainer 
     cascade_trainer_class_name = default_cascade_trainer 
     plans_identifier = default_plans_identifier
     num_threads_preprocessing = 6

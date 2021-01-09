@@ -6,7 +6,6 @@ from paths import default_cascade_trainer, default_plans_identifier, default_tra
 from utils import convert_id_to_task_name
 from subprocess import call
 
-
 def copy_fold(in_folder: str, out_folder: str):
     shutil.copy(join(in_folder, "debug.json"), join(out_folder, "debug.json"))
     shutil.copy(join(in_folder, "model_final_checkpoint.model"), join(out_folder, "model_final_checkpoint.model"))
@@ -19,7 +18,6 @@ def copy_fold(in_folder: str, out_folder: str):
 
 def copy_model(directory: str, output_directory: str):
     """
-
     :param directory: must have the 5 fold_X subfolders as well as a postprocessing.json and plans.pkl
     :param output_directory:
     :return:
@@ -108,7 +106,6 @@ def compress_everything(output_base, num_processes=8):
 
 
 def compress_folder(zip_file, folder):
-    """inspired by https://stackoverflow.com/questions/1855095/how-to-create-a-zip-archive-of-a-directory-in-python"""
     zipf = zipfile.ZipFile(zip_file, 'w', zipfile.ZIP_DEFLATED)
     for root, dirs, files in os.walk(folder):
         for file in files:
@@ -118,8 +115,7 @@ def compress_folder(zip_file, folder):
 def export_one_task(taskname, models, output_folder, nnunet_trainer=default_trainer,
                     nnunet_trainer_cascade=default_cascade_trainer,
                     plans_identifier=default_plans_identifier):
-    copy_pretrained_models_for_task(taskname, output_folder, models, nnunet_trainer, nnunet_trainer_cascade,
-                                    plans_identifier)
+    copy_pretrained_models_for_task(taskname, output_folder, models, nnunet_trainer, nnunet_trainer_cascade, plans_identifier)
     copy_ensembles(taskname, output_folder, models, (nnunet_trainer, nnunet_trainer_cascade), (plans_identifier,))
     compress_folder(join(output_folder, taskname + '.zip'), join(output_folder, taskname))
 
@@ -153,20 +149,16 @@ def export_pretrained_model(task_name: str, output_file: str,
 
         for e in expected_folders:
             zipf.write(join(expected_output_folder, e, "debug.json"),
-                       os.path.relpath(join(expected_output_folder, e, "debug.json"),
-                                       network_training_output_dir))
+                       os.path.relpath(join(expected_output_folder, e, "debug.json"), network_training_output_dir))
             zipf.write(join(expected_output_folder, e, "model_final_checkpoint.model"),
-                       os.path.relpath(join(expected_output_folder, e, "model_final_checkpoint.model"),
-                                       network_training_output_dir))
+                       os.path.relpath(join(expected_output_folder, e, "model_final_checkpoint.model"), network_training_output_dir))
             zipf.write(join(expected_output_folder, e, "model_final_checkpoint.model.pkl"),
-                       os.path.relpath(join(expected_output_folder, e, "model_final_checkpoint.model.pkl"),
-                                       network_training_output_dir))
+                       os.path.relpath(join(expected_output_folder, e, "model_final_checkpoint.model.pkl"), network_training_output_dir))
             zipf.write(join(expected_output_folder, e, "progress.png"),
                        os.path.relpath(join(expected_output_folder, e, "progress.png"), network_training_output_dir))
             if isfile(join(expected_output_folder, e, "network_architecture.pdf")):
                 zipf.write(join(expected_output_folder, e, "network_architecture.pdf"),
-                           os.path.relpath(join(expected_output_folder, e, "network_architecture.pdf"),
-                                           network_training_output_dir))
+                           os.path.relpath(join(expected_output_folder, e, "network_architecture.pdf"), network_training_output_dir))
 
         zipf.write(join(expected_output_folder, "plans.pkl"),
                    os.path.relpath(join(expected_output_folder, "plans.pkl"), network_training_output_dir))
@@ -234,22 +226,4 @@ def export_entry_point():
             raise e
         taskname = convert_id_to_task_name(taskid)
 
-    export_pretrained_model(taskname, args.o, args.m, args.tr, args.trc, args.pl, strict=not args.disable_strict,
-                            folds=folds)
-
-
-def export_for_paper():
-    output_base = "/media/fabian/DeepLearningData/nnunet_trained_models"
-    task_ids = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 17, 24, 27, 29, 35, 48, 55, 61, 38]
-    for t in task_ids:
-        if t == 61:
-            models = ("3d_fullres",)
-        else:
-            models = ("2d", "3d_lowres", "3d_fullres", "3d_cascade_fullres")
-        taskname = convert_id_to_task_name(t)
-        print(taskname)
-        output_folder = join(output_base, taskname)
-        maybe_mkdir_p(output_folder)
-        copy_pretrained_models_for_task(taskname, output_folder, models)
-        copy_ensembles(taskname, output_folder)
-    compress_everything(output_base, 8)
+    export_pretrained_model(taskname, args.o, args.m, args.tr, args.trc, args.pl, strict=not args.disable_strict, folds=folds)
