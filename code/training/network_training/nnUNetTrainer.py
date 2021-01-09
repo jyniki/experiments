@@ -458,7 +458,7 @@ class nnUNetTrainer(NetworkTrainer):
     def validate(self, do_mirroring: bool = True, use_sliding_window: bool = True, step_size: float = 0.5,
                  save_softmax: bool = True, use_gaussian: bool = True, overwrite: bool = True,
                  validation_folder_name: str = 'validation_raw', debug: bool = False, all_in_gpu: bool = False,
-                 segmentation_export_kwargs: dict = None):
+                 segmentation_export_kwargs: dict = None, postprocessing: bool = False):
         current_mode = self.network.training
         self.network.eval()
 
@@ -564,29 +564,29 @@ class nnUNetTrainer(NetworkTrainer):
                              json_author="Fabian",
                              json_task=task, num_threads=default_num_threads)
 
-        self.print_to_log_file("determining postprocessing")
-        
-        # output in final_subf_name("validation_raw__postprocessed")
-        determine_postprocessing(self.output_folder, self.gt_niftis_folder, validation_folder_name,
-                                 final_subf_name=validation_folder_name + "_postprocessed", debug=debug)
+        if postprocessing:
+            self.print_to_log_file("determining postprocessing") 
+            # output in final_subf_name("validation_raw__postprocessed")
+            determine_postprocessing(self.output_folder, self.gt_niftis_folder, validation_folder_name,
+                                    final_subf_name=validation_folder_name + "_postprocessed", debug=debug)
 
-        gt_nifti_folder = join(self.output_folder_base, "gt_niftis")
-        maybe_mkdir_p(gt_nifti_folder)
-        for f in subfiles(self.gt_niftis_folder, suffix=".nii.gz"):
-            success = False
-            attempts = 0
-            e = None
-            while not success and attempts < 10:
-                try:
-                    shutil.copy(f, gt_nifti_folder)
-                    success = True
-                except OSError as e:
-                    attempts += 1
-                    sleep(1)
-            if not success:
-                print("Could not copy gt nifti file %s into folder %s" % (f, gt_nifti_folder))
-                if e is not None:
-                    raise e
+            gt_nifti_folder = join(self.output_folder_base, "gt_niftis")
+            maybe_mkdir_p(gt_nifti_folder)
+            for f in subfiles(self.gt_niftis_folder, suffix=".nii.gz"):
+                success = False
+                attempts = 0
+                e = None
+                while not success and attempts < 10:
+                    try:
+                        shutil.copy(f, gt_nifti_folder)
+                        success = True
+                    except OSError as e:
+                        attempts += 1
+                        sleep(1)
+                if not success:
+                    print("Could not copy gt nifti file %s into folder %s" % (f, gt_nifti_folder))
+                    if e is not None:
+                        raise e
 
         self.network.train(current_mode)
 
