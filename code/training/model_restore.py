@@ -47,11 +47,8 @@ def load_model_and_checkpoint_files(folder, folds=None, mixed_precision=None, ch
     switching between parameters (as opposed to loading them form disk each time).
 
     This is best used for inference and test prediction
-    :param folder:
-    :param folds:
-    :param mixed_precision: if None then we take no action. If True/False we overwrite what the model has in its init
-    :return:
     """
+    
     if isinstance(folds, str):
         folds = [join(folder, "all")]
         assert isdir(folds[0]), "no output folder for fold %s found" % folds

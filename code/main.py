@@ -90,8 +90,9 @@ def pipeline():
         folds = config['inference_args']['folds']
         save_npz = config['inference_args']['save_npz']
         gpus = config['inference_args']['gpus']
+        mode = config['inference_args']['mode']
         disable_mixed_precision = config['inference_args']['disable_mixed_precision']
-        predicts.predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, disable_mixed_precision)
+        predicts.predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, disable_mixed_precision,mode)
         
     
 if __name__ == "__main__":
