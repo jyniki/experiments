@@ -1,10 +1,10 @@
 import torch
 from inference.predict_utils import predict_from_folder
-from paths import DATASET_DIR, default_plans_identifier, network_training_output_dir, default_cascade_trainer, default_trainer
+from paths import DATASET_DIR, default_plans_identifier, network_training_output_dir, pre_training_output_dir, default_cascade_trainer, default_trainer
 from batchgenerators.utilities.file_and_folder_operations import join, isdir
 from utils import convert_id_to_task_name
 
-def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, disable_mixed_precision, mode):
+def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, disable_mixed_precision, mode, using_pretrain):
     # default_trainer: nnUNetTrainerV2, can change to nnUNetTrainerV2_DP or nnUNetTrainerV2_DDP
     trainer_class_name = default_trainer 
     cascade_trainer_class_name = default_cascade_trainer 
@@ -55,9 +55,13 @@ def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz,
                                                 "inference of the cascade, custom values for part_id and num_parts " \
                                                 "are not supported. If you wish to have multiple parts, please " \
                                                 "run the 3d_lowres inference first (separately)"
-        model_folder_name = join(network_training_output_dir, "3d_lowres", task_name, trainer_class_name + "__" + plans_identifier)
+        if using_pretrain:
+            model_folder_name = join(pre_training_output_dir, "3d_lowres", task_name, trainer_class_name + "__" + plans_identifier)
+        else:
+            model_folder_name = join(network_training_output_dir, "3d_lowres", task_name, trainer_class_name + "__" + plans_identifier)
         assert isdir(model_folder_name), "model output folder not found. Expected: %s" % model_folder_name
         lowres_output_folder = join(output_folder, "3d_lowres_predictions")
+        
         predict_from_folder(model_folder_name, input_folder, lowres_output_folder, folds, False,
                             num_threads_preprocessing, num_threads_nifti_save, None, part_id, num_parts, not disable_tta,
                             overwrite_existing=overwrite_existing, mode=mode, overwrite_all_in_gpu=all_in_gpu,
@@ -71,8 +75,11 @@ def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz,
         trainer = cascade_trainer_class_name
     else:
         trainer = trainer_class_name
-
-    model_folder_name = join(network_training_output_dir, model, task_name, trainer + "__" + plans_identifier)
+    
+    if using_pretrain:
+        model_folder_name = join(pre_training_output_dir, "3d_lowres", task_name, trainer_class_name + "__" + plans_identifier)
+    else:
+        model_folder_name = join(network_training_output_dir, model, task_name, trainer + "__" + plans_identifier)
     print("using model stored in ", model_folder_name)
     assert isdir(model_folder_name), "model output folder not found. Expected: %s" % model_folder_name
 
@@ -81,8 +88,10 @@ def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz,
                         overwrite_existing=overwrite_existing, mode=mode, overwrite_all_in_gpu=all_in_gpu,
                         mixed_precision=not disable_mixed_precision,
                         step_size=step_size, checkpoint_name="model_final_checkpoint")
+
 # TODO
-# def predict():
+def predict():
+    pass
 #     parser = argparse.ArgumentParser()
 #     parser.add_argument("-i", '--input_folder', help="Must contain all modalities for each patient in the correct"
 #                                                      " order (same as training). Files must be named "

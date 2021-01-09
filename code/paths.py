@@ -39,6 +39,7 @@ else:
 
 if network_training_output_dir_base is not None:
     network_training_output_dir = join(network_training_output_dir_base, my_output_identifier)
+    pre_training_output_dir = join(network_training_output_dir_base, pretrain_identifier)
     maybe_mkdir_p(network_training_output_dir)
 else:
     print("RESULTS_FOLDER is not defined and nnU-Net cannot be used for training or inference."
