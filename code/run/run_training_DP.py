@@ -39,8 +39,7 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
                                                                        "trainer class must be derived from " \
                                                                        "nnUNetTrainerCascadeFullRes"
     else:
-        assert issubclass(trainer_class, nnUNetTrainer), "network_trainer was found but is not derived from " \
-                                                         "nnUNetTrainer"
+        assert issubclass(trainer_class, nnUNetTrainer), "network_trainer was found but is not derived from nnUNetTrainer"
 
     print(trainer_class)
     trainer = trainer_class(plans_file, fold, output_folder=output_folder_name,
