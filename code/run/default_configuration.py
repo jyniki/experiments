@@ -5,7 +5,7 @@ Description:
 '''
 from paths import network_training_output_dir, preprocessing_output_dir, default_plans_identifier
 from batchgenerators.utilities.file_and_folder_operations import *
-from run.utils import summarize_plans
+from run.run_utils import summarize_plans
 from utils import recursive_find_python_class
 
 def get_configuration_from_output_folder(folder):

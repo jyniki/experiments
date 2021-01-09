@@ -4,6 +4,9 @@ Date: 2020-12-30 18:03:03
 Description: 
 '''
 
+import sys
+import os
+sys.path.append(os.getcwd())
 import argparse
 from batchgenerators.utilities.file_and_folder_operations import *
 from run.default_configuration import get_default_configuration
@@ -15,7 +18,7 @@ from training.network_training.nnUNetTrainerV2_CascadeFullRes import nnUNetTrain
 from utils import convert_id_to_task_name
 
 
-def train():
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("network")
     parser.add_argument("network_trainer")
@@ -139,3 +142,7 @@ def train():
             print("predicting segmentations for the next stage of the cascade")
             predict_next_stage(trainer, join(dataset_directory, trainer.plans['data_identifier'] + "_stage%d" % 1))
 
+
+if __name__ == "__main__":
+    main()
+    

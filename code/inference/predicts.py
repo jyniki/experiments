@@ -25,8 +25,7 @@ def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz,
         task_id = int(task_name)
         task_name = convert_id_to_task_name(task_id)
 
-    assert model in ["2d", "3d_lowres", "3d_fullres", "3d_cascade_fullres"], "-m must be 2d, 3d_lowres, 3d_fullres or " \
-                                                                             "3d_cascade_fullres"
+    assert model in ["2d", "3d_lowres", "3d_fullres", "3d_cascade_fullres"], "-m must be 2d, 3d_lowres, 3d_fullres or 3d_cascade_fullres"
     
     output_folder = join(DATASET_DIR,output_folder,model,task_name)
 
@@ -56,8 +55,7 @@ def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz,
                                                 "inference of the cascade, custom values for part_id and num_parts " \
                                                 "are not supported. If you wish to have multiple parts, please " \
                                                 "run the 3d_lowres inference first (separately)"
-        model_folder_name = join(network_training_output_dir, "3d_lowres", task_name, trainer_class_name + "__" +
-                                  plans_identifier)
+        model_folder_name = join(network_training_output_dir, "3d_lowres", task_name, trainer_class_name + "__" + plans_identifier)
         assert isdir(model_folder_name), "model output folder not found. Expected: %s" % model_folder_name
         lowres_output_folder = join(output_folder, "3d_lowres_predictions")
         predict_from_folder(model_folder_name, input_folder, lowres_output_folder, folds, False,

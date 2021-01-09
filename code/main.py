@@ -9,6 +9,7 @@ from paths import nnUNet_raw_data
 from batchgenerators.utilities.file_and_folder_operations import join
 import yaml
 import argparse
+import os
 
 def pipeline():
     parser = argparse.ArgumentParser()
@@ -59,11 +60,19 @@ def pipeline():
             run_training_DP.train(network,network_trainer,task,fold,disable_saving, npz_flag, validation_only,continue_training, gpus, dbs_flag)
         
         elif config['train_module'] == 'ddp':
-            # TODO:
-            # python -m torch.distributed.launch --master_port=4321 --nproc_per_node=4 run/run_training_DDP.py 3d_fullres nnUNetTrainerV2_DDP 8 4
             print("training_ddp")
+            gpus = config['training_ddp']['gpus']
             network_trainer = config['training_ddp']['network_trainer']
-            # run_training_DDP.train(network,network_trainer,task,fold,disable_saving, npz_flag, validation_only,continue_training)
+            device_id = config['training_ddp']['device_id']
+            command = "/data0/JY/anaconda3/envs/myenv/bin/python -m torch.distributed.launch --master_port=4321 --nproc_per_node=%d run/run_training_DDP.py %s %s %d %d "%(gpus,network,network_trainer,task,fold)
+            dbs_flag = config['training_ddp']['dbs']
+            
+            # python -m torch.distributed.launch --master_port=4321 --nproc_per_node=4 run/run_training_DDP.py 3d_fullres nnUNetTrainerV2_DDP 8 4 --local_rank 1
+            print(command)
+            if not dbs_flag:
+                os.system(command)
+            else:
+                os.system(command+"--dbs")
             
         else:
             print("training_single_gpu")
