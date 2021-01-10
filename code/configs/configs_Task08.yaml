@@ -40,7 +40,7 @@ inference_args:
   model: 3d_fullres
   folds: [4] # [0, 1, 2, 3, 4]
   save_npz: False
-  gpus: 4
+  gpus: 1
   mode: normal  # normal, fast, fastest
   disable_mixed_precision: False
   overwrite_existing: False   # set false, if exist: exit
