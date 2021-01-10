@@ -208,8 +208,7 @@ def determine_postprocessing(base, gt_labels_folder, raw_subfolder_name="validat
 
     # evaluate postprocessed predictions
     _ = aggregate_scores(pred_gt_tuples, labels=classes,
-                         json_output_file=join(folder_all_classes_as_fg, "summary.json"),
-                         json_author="Fabian", num_threads=processes)
+                         json_output_file=join(folder_all_classes_as_fg, "summary.json"), num_threads=processes)
 
     # now we need to figure out if doing this improved the dice scores. We will implement that defensively in so far
     # that if a single class got worse as a result we won't do this. We can change this in the future but right now I
@@ -304,8 +303,7 @@ def determine_postprocessing(base, gt_labels_folder, raw_subfolder_name="validat
 
         # evaluate postprocessed predictions
         _ = aggregate_scores(pred_gt_tuples, labels=classes,
-                             json_output_file=join(folder_per_class, "summary.json"),
-                             json_author="Fabian", num_threads=processes)
+                             json_output_file=join(folder_per_class, "summary.json"), num_threads=processes)
 
         if do_fg_cc:
             old_res = deepcopy(validation_result_PP_test)
@@ -361,8 +359,7 @@ def determine_postprocessing(base, gt_labels_folder, raw_subfolder_name="validat
     _ = [i.get() for i in results]
     # evaluate postprocessed predictions
     _ = aggregate_scores(pred_gt_tuples, labels=classes,
-                         json_output_file=join(base, final_subf_name, "summary.json"),
-                         json_author="Fabian", num_threads=processes)
+                         json_output_file=join(base, final_subf_name, "summary.json"), num_threads=processes)
 
     pp_results['min_valid_object_sizes'] = str(pp_results['min_valid_object_sizes'])
 
@@ -397,13 +394,7 @@ def apply_postprocessing_to_folder(input_folder: str, output_folder: str, for_wh
     out_files = [join(output_folder, i) for i in nii_files]
     results = p.starmap_async(load_remove_save, zip(input_files, out_files, [for_which_classes] * len(input_files),
                                                     [min_valid_object_size] * len(input_files)))
-    res = results.get()
+    _ = results.get()
     p.close()
     p.join()
 
-
-if __name__ == "__main__":
-    input_folder = "/media/fabian/DKFZ/predictions_Fabian/Liver_and_LiverTumor"
-    output_folder = "/media/fabian/DKFZ/predictions_Fabian/Liver_and_LiverTumor_postprocessed"
-    for_which_classes = [(1, 2), ]
-    apply_postprocessing_to_folder(input_folder, output_folder, for_which_classes)

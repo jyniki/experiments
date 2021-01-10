@@ -239,8 +239,9 @@ class nnUNetTrainerCascadeFullRes(nnUNetTrainer):
         task = self.dataset_directory.split("/")[-1]
         job_name = self.experiment_name
         _ = aggregate_scores(pred_gt_tuples, labels=list(range(self.num_classes)),
-                             json_output_file=join(output_folder, "summary.json"), json_name=job_name,
-                             json_author="Fabian", json_description="",
+                             json_output_file=join(output_folder, "summary.json"), 
+                             json_name=job_name,
+                             json_description="",
                              json_task=task)
 
         # in the old nnunet we would stop here. Now we add a postprocessing. This postprocessing can remove everything

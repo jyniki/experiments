@@ -1,21 +1,13 @@
-#    Copyright 2020 Division of Medical Image Computing, German Cancer Research Center (DKFZ), Heidelberg, Germany
-#
-#    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
-#    You may obtain a copy of the License at
-#
-#        http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS,
-#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#    See the License for the specific language governing permissions and
-#    limitations under the License.
-
+'''
+Author: Niki
+Date: 2021-01-08 22:21:13
+Description: 
+'''
 
 from training.learning_rate.poly_lr import poly_lr
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 import matplotlib.pyplot as plt
+from os.path import join as join
 
 
 def cycle_lr(current_epoch, cycle_length=100, min_lr=1e-6, max_lr=1e-3):
@@ -28,12 +20,12 @@ def cycle_lr(current_epoch, cycle_length=100, min_lr=1e-6, max_lr=1e-3):
     return lr
 
 
-def plot_cycle_lr():
+def plot_cycle_lr(path):
     xvals = list(range(1000))
     yvals = [cycle_lr(i, 100, 1e-6, 1e-3) for i in xvals]
     plt.plot(xvals, yvals)
     plt.show()
-    plt.savefig("/home/fabian/temp.png")
+    plt.savefig(join(path,"temp.png"))
     plt.close()
 
 

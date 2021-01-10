@@ -304,24 +304,10 @@ def aggregate_scores(test_ref_pairs,
                      json_output_file=None,
                      json_name="",
                      json_description="",
-                     json_author="Fabian",
                      json_task="",
                      num_threads=2,
                      **metric_kwargs):
-    """
-    test = predicted image
-    :param test_ref_pairs:
-    :param evaluator:
-    :param labels: must be a dict of int-> str or a list of int
-    :param nanmean:
-    :param json_output_file:
-    :param json_name:
-    :param json_description:
-    :param json_author:
-    :param json_task:
-    :param metric_kwargs:
-    :return:
-    """
+
 
     if type(evaluator) == type:
         evaluator = evaluator()
@@ -386,7 +372,6 @@ def aggregate_scores_for_experiment(score_file,
                                     json_output_file=None,
                                     json_name="",
                                     json_description="",
-                                    json_author="Fabian",
                                     json_task=""):
 
     scores = np.load(score_file)

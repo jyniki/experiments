@@ -446,7 +446,6 @@ class nnUNetTrainerV2_DDP(nnUNetTrainerV2):
                 _ = aggregate_scores(pred_gt_tuples, labels=list(range(self.num_classes)),
                                      json_output_file=join(output_folder, "summary.json"),
                                      json_name=job_name + " val tiled %s" % (str(use_sliding_window)),
-                                     json_author="Fabian",
                                      json_task=task, num_threads=default_num_threads)
     
                 # in the old nnunet we would stop here. Now we add a postprocessing. This postprocessing can remove everything

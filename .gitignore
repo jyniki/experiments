@@ -2,5 +2,5 @@
 **/__pycache__
 experiments.udb
 **/.DS_Store
-**/configs
+# **/configs
 /DATASET/
