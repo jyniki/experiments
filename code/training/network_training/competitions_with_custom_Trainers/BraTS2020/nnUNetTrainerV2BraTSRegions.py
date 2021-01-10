@@ -12,8 +12,8 @@ from network_architecture.initialization import InitWeights_He
 from network_architecture.neural_network import SegmentationNetwork
 from training.data_augmentation.default_data_augmentation import get_moreDA_augmentation
 from training.dataloading.dataset_loading import unpack_dataset
-from training.loss_functions.deep_supervision import MultipleOutputLoss2
-from training.loss_functions.dice_loss import DC_and_BCE_loss, get_tp_fp_fn_tn, SoftDiceLoss
+from loss_functions.deep_supervision import MultipleOutputLoss2
+from loss_functions.dice_loss import DC_and_BCE_loss, get_tp_fp_fn_tn, SoftDiceLoss
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from training.network_training.nnUNetTrainerV2_DDP import nnUNetTrainerV2_DDP
 from training.utils import awesome_allgather_function
