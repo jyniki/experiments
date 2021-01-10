@@ -35,6 +35,7 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
             self.folder_with_segs_from_prev_stage = folder_with_segs_prev_stage
         else:
             self.folder_with_segs_from_prev_stage = None
+        print(self.folder_with_segs_from_prev_stage)
 
     def do_split(self):
         super().do_split()
