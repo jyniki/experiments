@@ -8,8 +8,6 @@ from experiment_planning.experiment_planner_baseline_2DUNet import ExperimentPla
 from network_architecture.generic_UNet import Generic_UNet
 from paths import *
 import numpy as np
-
-
 class ExperimentPlanner2D_v21(ExperimentPlanner2D):
     def __init__(self, folder_with_cropped_data, preprocessed_output_folder):
         super(ExperimentPlanner2D_v21, self).__init__(folder_with_cropped_data, preprocessed_output_folder)

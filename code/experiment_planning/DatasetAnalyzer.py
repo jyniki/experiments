@@ -6,8 +6,6 @@ import pickle
 from preprocessing.cropping import get_patient_identifiers_from_cropped_files
 from skimage.morphology import label
 from collections import OrderedDict
-
-
 class DatasetAnalyzer(object):
     def __init__(self, folder_with_cropped_data, overwrite=True, num_processes=default_num_threads):
         """

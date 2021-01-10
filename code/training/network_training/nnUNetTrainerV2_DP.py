@@ -48,10 +48,6 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
         - replaced get_default_augmentation with get_moreDA_augmentation
         - only run this code once
         - loss function wrapper for deep supervision
-
-        :param training:
-        :param force_load_plans:
-        :return:
         """
         if not self.was_initialized:
             maybe_mkdir_p(self.output_folder)
@@ -60,7 +56,6 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
                 self.load_plans_file()
 
             self.process_plans(self.plans)
-
             self.setup_DA_params()
 
             ################# Here configure the loss for deep supervision ############
@@ -86,15 +81,12 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
                         "will wait all winter for your model to finish!")
 
                 self.tr_gen, self.val_gen = get_moreDA_augmentation(self.dl_tr, self.dl_val,
-                                                                    self.data_aug_params[
-                                                                        'patch_size_for_spatialtransform'],
+                                                                    self.data_aug_params['patch_size_for_spatialtransform'],
                                                                     self.data_aug_params,
                                                                     deep_supervision_scales=self.deep_supervision_scales,
                                                                     pin_memory=self.pin_memory)
-                self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())),
-                                       also_print_to_console=False)
-                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())),
-                                       also_print_to_console=False)
+                self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())), also_print_to_console=False)
+                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())), also_print_to_console=False)
             else:
                 pass
 
@@ -141,12 +133,9 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
 
     def run_training(self):
         self.maybe_update_lr(self.epoch)
-
         # amp must be initialized before DP
-
         ds = self.network.do_ds
         self.network.do_ds = True
-        
         # self.network = DataParallel(self.network, tuple(range(self.num_gpus)), )
         self.network = DataParallel(self.network, device_ids = list(range(0, self.num_gpus)))
         

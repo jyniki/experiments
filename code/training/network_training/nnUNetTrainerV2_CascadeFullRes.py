@@ -22,10 +22,10 @@ matplotlib.use("agg")
 class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
     def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
                  unpack_data=True, deterministic=True, previous_trainer="nnUNetTrainerV2", fp16=False):
-        super().__init__(plans_file, fold, output_folder, dataset_directory,
-                         batch_dice, stage, unpack_data, deterministic, fp16)
-        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
-                          deterministic, previous_trainer, fp16)
+        super().__init__(plans_file, fold, output_folder, dataset_directory,batch_dice, stage, 
+                         unpack_data, deterministic, fp16)
+        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
+                          unpack_data, deterministic, fp16, previous_trainer)
 
         if self.output_folder is not None:
             task = self.output_folder.split("/")[-3]
@@ -69,24 +69,16 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
 
     def setup_DA_params(self):
         super().setup_DA_params()
-
         self.data_aug_params["num_cached_per_thread"] = 2
-
         self.data_aug_params['move_last_seg_chanel_to_data'] = True
         self.data_aug_params['cascade_do_cascade_augmentations'] = True
-
         self.data_aug_params['cascade_random_binary_transform_p'] = 0.4
         self.data_aug_params['cascade_random_binary_transform_p_per_label'] = 1
         self.data_aug_params['cascade_random_binary_transform_size'] = (1, 8)
-
         self.data_aug_params['cascade_remove_conn_comp_p'] = 0.2
         self.data_aug_params['cascade_remove_conn_comp_max_size_percent_threshold'] = 0.15
         self.data_aug_params['cascade_remove_conn_comp_fill_with_other_class_p'] = 0.0
-
-        # we have 2 channels now because the segmentation from the previous stage is stored in 'seg' as well until it
-        # is moved to 'data' at the end
         self.data_aug_params['selected_seg_channels'] = [0, 1]
-        # needed for converting the segmentation from the previous stage to one hot
         self.data_aug_params['all_segmentation_labels'] = list(range(1, self.num_classes))
 
     def initialize(self, training=True, force_load_plans=False):
@@ -99,7 +91,6 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
                 self.load_plans_file()
 
             self.process_plans(self.plans)
-
             self.setup_DA_params()
 
             ################# Here we wrap the loss for deep supervision ############
