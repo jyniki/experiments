@@ -4,4 +4,4 @@ experiments.udb
 **/.DS_Store
 # **/configs
 /DATASET/
-!/DATASET/pickle_view.ipynb
+!pickle_view.ipynb
