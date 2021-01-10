@@ -22,10 +22,7 @@ def preprocess_save_to_queue(preprocess_fn, q, list_of_lists, output_files, segs
         try:
             output_file = output_files[i]
             print("preprocessing", output_file)
-            print("test------------------start")
             d, _, dct = preprocess_fn(l)
-            print("test------------------end")
-            
             print(output_file, dct)
             if segs_from_prev_stage[i] is not None:
                 assert isfile(segs_from_prev_stage[i]) and segs_from_prev_stage[i].endswith(
