@@ -9,6 +9,7 @@ from paths import default_plans_identifier
 from training.cascade_stuff.predict_next_stage import predict_next_stage
 from training.network_training.nnUNetTrainer import nnUNetTrainer
 from training.network_training.nnUNetTrainerCascadeFullRes import nnUNetTrainerCascadeFullRes
+from training.network_training.nnUNetTrainerV2_CascadeFullRes import nnUNetTrainerV2CascadeFullRes
 from utils import convert_id_to_task_name
 
 def train(network, network_trainer, task, fold, disable_saving, npz_flag, validation_only, continue_training, num_gpus, dbs_flag):
@@ -38,6 +39,7 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
         assert issubclass(trainer_class, nnUNetTrainerCascadeFullRes), "If running 3d_cascade_fullres then your " \
                                                                        "trainer class must be derived from " \
                                                                        "nnUNetTrainerCascadeFullRes"
+
     else:
         assert issubclass(trainer_class, nnUNetTrainer), "network_trainer was found but is not derived from nnUNetTrainer"
 
