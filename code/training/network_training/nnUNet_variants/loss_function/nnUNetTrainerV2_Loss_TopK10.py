@@ -4,7 +4,7 @@ Date: 2021-01-08 11:00:41
 Description: 
 '''
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
-from training.loss_functions.TopK_loss import TopKLoss
+from loss_functions.TopK_loss import TopKLoss
 
 
 class nnUNetTrainerV2_Loss_TopK10(nnUNetTrainerV2):

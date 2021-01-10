@@ -5,7 +5,7 @@ Description:
 '''
 
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
-from training.loss_functions.dice_loss import GDL_and_CE_loss
+from loss_functions.dice_loss import GDL_and_CE_loss
 
 
 class nnUNetTrainerV2_Loss_CEGDL(nnUNetTrainerV2):

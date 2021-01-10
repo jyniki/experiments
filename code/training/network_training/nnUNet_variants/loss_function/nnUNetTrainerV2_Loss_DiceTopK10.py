@@ -4,7 +4,7 @@ Date: 2021-01-08 11:00:41
 Description: 
 '''
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
-from training.loss_functions.dice_loss import DC_and_topk_loss
+from loss_functions.dice_loss import DC_and_topk_loss
 
 
 class nnUNetTrainerV2_Loss_DiceTopK10(nnUNetTrainerV2):

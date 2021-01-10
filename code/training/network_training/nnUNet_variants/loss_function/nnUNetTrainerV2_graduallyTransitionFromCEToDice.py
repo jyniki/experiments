@@ -3,8 +3,8 @@ Author: Niki
 Date: 2021-01-08 11:00:41
 Description: 
 '''
-from training.loss_functions.deep_supervision import MultipleOutputLoss2
-from training.loss_functions.dice_loss import DC_and_CE_loss
+from loss_functions.deep_supervision import MultipleOutputLoss2
+from loss_functions.dice_loss import DC_and_CE_loss
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 
 

@@ -5,7 +5,7 @@ Description:
 '''
 
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
-from training.loss_functions.dice_loss import SoftDiceLoss
+from loss_functions.dice_loss import SoftDiceLoss
 from utils import softmax_helper
 
 
