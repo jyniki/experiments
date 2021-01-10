@@ -39,8 +39,8 @@ inference_args:
   task_id: 3
   model: 3d_fullres
   folds: [4] # [0, 1, 2, 3, 4]
-  save_npz: False
-  gpus: 4
+  save_npz: True
+  gpus: 1
   mode: normal  # normal, fast, fastest
   disable_mixed_precision: False
   using_pretrain: True
