@@ -15,7 +15,6 @@ from batchgenerators.utilities.file_and_folder_operations import *
 import numpy as np
 from utils import to_one_hot
 import shutil
-
 matplotlib.use("agg")
 
 
@@ -46,16 +45,13 @@ class nnUNetTrainerCascadeFullRes(nnUNetTrainer):
     def do_split(self):
         super(nnUNetTrainerCascadeFullRes, self).do_split()
         for k in self.dataset:
-            self.dataset[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage,
-                                                               k + "_segFromPrevStage.npz")
+            self.dataset[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
             assert isfile(self.dataset[k]['seg_from_prev_stage_file']), \
                 "seg from prev stage missing: %s" % (self.dataset[k]['seg_from_prev_stage_file'])
         for k in self.dataset_val:
-            self.dataset_val[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage,
-                                                                   k + "_segFromPrevStage.npz")
+            self.dataset_val[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
         for k in self.dataset_tr:
-            self.dataset_tr[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage,
-                                                                  k + "_segFromPrevStage.npz")
+            self.dataset_tr[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
 
     def get_basic_generators(self):
         self.load_dataset()
