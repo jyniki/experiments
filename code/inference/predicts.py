@@ -4,7 +4,7 @@ from paths import DATASET_DIR, default_plans_identifier, network_training_output
 from batchgenerators.utilities.file_and_folder_operations import join, isdir
 from utils import convert_id_to_task_name
 
-def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, disable_mixed_precision, mode, using_pretrain):
+def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, disable_mixed_precision, mode, using_pretrain, overwrite_existing):
     # default_trainer: nnUNetTrainerV2, can change to nnUNetTrainerV2_DP or nnUNetTrainerV2_DDP
     trainer_class_name = default_trainer 
     cascade_trainer_class_name = default_cascade_trainer 
@@ -17,7 +17,6 @@ def predict_simple(input_folder, output_folder, task_id, model, folds, save_npz,
     num_parts = gpus
     disable_tta = False
     step_size = 0.5
-    overwrite_existing = False
     all_in_gpu = "None"
     task_name = task_id
 

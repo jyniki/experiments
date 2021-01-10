@@ -652,11 +652,6 @@ class NetworkTrainer(object):
     def find_lr(self, num_iters=1000, init_value=1e-6, final_value=10., beta=0.98):
         """
         stolen and adapted from here: https://sgugger.github.io/how-do-you-find-a-good-learning-rate.html
-        :param num_iters:
-        :param init_value:
-        :param final_value:
-        :param beta:
-        :return:
         """
         import math
         self._maybe_init_amp()

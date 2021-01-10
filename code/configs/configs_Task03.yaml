@@ -43,6 +43,7 @@ inference_args:
   gpus: 1
   mode: normal  # normal, fast, fastest
   disable_mixed_precision: False
+  overwrite_existing: False   # set false, if exist: exit
   using_pretrain: True
   
 

@@ -92,10 +92,11 @@ def pipeline():
         mode = config['inference_args']['mode']
         disable_mixed_precision = config['inference_args']['disable_mixed_precision']
         using_pretrain = config['inference_args']['using_pretrain']
-        
+        overwrite_existing = config['inference_args']['overwrite_existing']
         print("inference_parse, mode:" + mode)
         
-        predicts.predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, disable_mixed_precision,mode,using_pretrain)
+        predicts.predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, \
+            disable_mixed_precision,mode,using_pretrain,overwrite_existing)
         
     
 if __name__ == "__main__":
