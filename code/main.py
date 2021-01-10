@@ -81,7 +81,6 @@ def pipeline():
             run_training.train(network,network_trainer,task,fold,disable_saving, npz_flag, validation_only,continue_training,using_pretrain)
             
     if 4 in operation_type:
-        print("inference_parse")
         from inference import predicts
         input_folder = config['inference_args']['input_folder']
         output_folder = config['inference_args']['output_folder']
@@ -93,6 +92,9 @@ def pipeline():
         mode = config['inference_args']['mode']
         disable_mixed_precision = config['inference_args']['disable_mixed_precision']
         using_pretrain = config['inference_args']['using_pretrain']
+        
+        print("inference_parse, mode:" + mode)
+        
         predicts.predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, disable_mixed_precision,mode,using_pretrain)
         
     

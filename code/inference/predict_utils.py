@@ -22,10 +22,7 @@ def preprocess_save_to_queue(preprocess_fn, q, list_of_lists, output_files, segs
         try:
             output_file = output_files[i]
             print("preprocessing", output_file)
-            print("test------------------start")
             d, _, dct = preprocess_fn(l)
-            print("test------------------end")
-            
             print(output_file, dct)
             if segs_from_prev_stage[i] is not None:
                 assert isfile(segs_from_prev_stage[i]) and segs_from_prev_stage[i].endswith(
@@ -537,8 +534,7 @@ def predict_from_folder(model: str, input_folder: str, output_folder: str, folds
 
     output_files = [join(output_folder, i + ".nii.gz") for i in case_ids]
     all_files = subfiles(input_folder, suffix=".nii.gz", join=False, sort=True)
-    list_of_lists = [[join(input_folder, i) for i in all_files if i[:len(j)].startswith(j) and
-                      len(i) == (len(j) + 12)] for j in case_ids]
+    list_of_lists = [[join(input_folder, i) for i in all_files if i[:len(j)].startswith(j) and len(i) == (len(j) + 12)] for j in case_ids]
 
     if lowres_segmentations is not None:
         assert isdir(lowres_segmentations), "if lowres_segmentations is not None then it must point to a directory"
