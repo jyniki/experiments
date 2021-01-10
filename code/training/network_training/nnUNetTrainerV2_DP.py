@@ -20,8 +20,8 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
                  unpack_data=True, deterministic=True, num_gpus=1, distribute_batch_size=False, fp16=False):
         super(nnUNetTrainerV2_DP, self).__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage,
                                                 unpack_data, deterministic, fp16)
-        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
-                          deterministic, num_gpus, distribute_batch_size, fp16)
+        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
+                          unpack_data, deterministic, fp16, num_gpus, distribute_batch_size)
         self.num_gpus = num_gpus
         self.distribute_batch_size = distribute_batch_size
         self.dice_smooth = 1e-5

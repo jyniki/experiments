@@ -93,8 +93,6 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
         """
         For prediction of test cases just set training=False, this will prevent loading of training data and
         training batchgenerator initialization
-        :param training:
-        :return:
         """
         if not self.was_initialized:
             if force_load_plans or (self.plans is None):
@@ -141,15 +139,12 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
                         "will wait all winter for your model to finish!")
 
                 self.tr_gen, self.val_gen = get_moreDA_augmentation(self.dl_tr, self.dl_val,
-                                                                    self.data_aug_params[
-                                                                        'patch_size_for_spatialtransform'],
+                                                                    self.data_aug_params['patch_size_for_spatialtransform'],
                                                                     self.data_aug_params,
                                                                     deep_supervision_scales=self.deep_supervision_scales,
                                                                     pin_memory=self.pin_memory)
-                self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())),
-                                       also_print_to_console=False)
-                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())),
-                                       also_print_to_console=False)
+                self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())), also_print_to_console=False)
+                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())),  also_print_to_console=False)
             else:
                 pass
 

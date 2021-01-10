@@ -300,7 +300,6 @@ class nnUNetTrainerV2_DDP(nnUNetTrainerV2):
         continued epoch with self.initial_lr
 
         we also need to make sure deep supervision in the network is enabled for training, thus the wrapper
-        :return:
         """
         self.maybe_update_lr(self.epoch)  # if we dont overwrite epoch then self.epoch+1 is used which is not what we
         # want at the start of the training
