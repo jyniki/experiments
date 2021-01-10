@@ -99,7 +99,7 @@ class nnUNetTrainerV2CascadeFullRes_DP(nnUNetTrainerV2_DP):
             mask = np.array([True if i < net_numpool - 1 else False for i in range(net_numpool)])
             weights[~mask] = 0
             weights = weights / weights.sum()
-            self.ds_loss_weights = weights
+            self.loss_weights = weights
             ################# END ###################
 
             self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] + "_stage%d" % self.stage)

@@ -45,7 +45,7 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
     trainer = trainer_class(plans_file, fold, output_folder=output_folder_name,
                             dataset_directory=dataset_directory, batch_dice=batch_dice, stage=stage,
                             unpack_data=decompress_data, deterministic=deterministic,
-                            distribute_batch_size=dbs_flag, num_gpus=num_gpus, fp16=not fp32)
+                            distribute_batch_size=dbs_flag, num_gpus=num_gpus, fp16 = not fp32)
 
     if disable_saving:
         trainer.save_latest_only = False  # if false it will not store/overwrite _latest but separate files each

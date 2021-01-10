@@ -95,8 +95,7 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
             weights = weights / weights.sum()
             self.ds_loss_weights = weights
             self.loss = MultipleOutputLoss2(self.loss, self.ds_loss_weights)
-            self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] +
-                                                      "_stage%d" % self.stage)
+            self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] + "_stage%d" % self.stage)
 
             if training:
                 if not isdir(self.folder_with_segs_from_prev_stage):

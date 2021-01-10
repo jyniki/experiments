@@ -94,7 +94,7 @@ class nnUNetTrainerV2CascadeFullRes_DDP(nnUNetTrainerV2_DDP):
             mask = np.array([True if i < net_numpool - 1 else False for i in range(net_numpool)])
             weights[~mask] = 0
             weights = weights / weights.sum()
-            self.ds_loss_weights = weights
+            self.loss_weights = weights
             # self.loss = MultipleOutputLoss2(self.loss, self.ds_loss_weights)
             ################# END ###################
 
