@@ -1,0 +1,7 @@
+/.idea/
+**/__pycache__
+experiments.udb
+**/.DS_Store
+# **/configs
+/DATASET/
+!pickle_view.ipynb
