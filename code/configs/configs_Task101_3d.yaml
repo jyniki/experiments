@@ -8,10 +8,10 @@
 #   no_pp: False
 #   verify_integrity: False
 
-train_module: single  # single ,dp, ddp
+train_module: dp  # single ,dp, ddp
 
 training_args:
-  network: 3d_cascade_fullres  # 2d, 3d_fullres, 3d_lowres, 3d_cascade_fullres
+  network: 3d_lowres  # 2d, 3d_fullres, 3d_lowres, 3d_cascade_fullres
   task_id: 101
   fold: 0
   validation_only: False
@@ -20,18 +20,18 @@ training_args:
   disable_saving: False
 
 training_single:
-  network_trainer: nnUNetTrainerCascadeFullRes  #nnUNetTrainerV2_CascadeFullRes
+  network_trainer: nnUNetTrainerV2
   using_pretrain: True
   
 training_dp:
   gpus: 4
   dbs: False
-  network_trainer: nnUNetTrainerCascadeFullRes
+  network_trainer: nnUNetTrainerV2_DP
 
 training_ddp:
   gpus: 4
   dbs: False
-  network_trainer: nnUNetTrainerCascadeFullRes
+  network_trainer: nnUNetTrainerV2_DDP
 
 inference_args:
   input_folder: nnUNet_raw/nnUNet_raw_data/Task003_Liver/imagesTe
