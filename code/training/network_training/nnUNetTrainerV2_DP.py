@@ -3,11 +3,11 @@ import torch
 from batchgenerators.utilities.file_and_folder_operations import *
 from network_architecture.generic_UNet_DP import Generic_UNet_DP
 from training.data_augmentation.default_data_augmentation import get_moreDA_augmentation
-from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from utils import maybe_to_torch, to_cuda, softmax_helper
 from network_architecture.initialization import InitWeights_He
 from network_architecture.neural_network import SegmentationNetwork
 from training.dataloading.dataset_loading import unpack_dataset
+from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from training.network_training.nnUNetTrainer import nnUNetTrainer
 from torch import nn
 from torch.cuda.amp import autocast

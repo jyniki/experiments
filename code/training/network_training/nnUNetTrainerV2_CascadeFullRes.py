@@ -31,32 +31,25 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
             task = self.output_folder.split("/")[-3]
             plans_identifier = self.output_folder.split("/")[-2].split("__")[-1]
 
-            folder_with_segs_prev_stage = join(network_training_output_dir, "3d_lowres",
-                                               task, previous_trainer + "__" + plans_identifier, "pred_next_stage")
+            folder_with_segs_prev_stage = join(network_training_output_dir, "3d_lowres", task, previous_trainer + "__" + plans_identifier, "pred_next_stage")
             self.folder_with_segs_from_prev_stage = folder_with_segs_prev_stage
-            # Do not put segs_prev_stage into self.output_folder as we need to unpack them for performance and we
-            # don't want to do that in self.output_folder because that one is located on some network drive.
         else:
             self.folder_with_segs_from_prev_stage = None
 
     def do_split(self):
         super().do_split()
         for k in self.dataset:
-            self.dataset[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage,
-                                                               k + "_segFromPrevStage.npz")
+            self.dataset[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
             assert isfile(self.dataset[k]['seg_from_prev_stage_file']), \
                 "seg from prev stage missing: %s" % (self.dataset[k]['seg_from_prev_stage_file'])
         for k in self.dataset_val:
-            self.dataset_val[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage,
-                                                                   k + "_segFromPrevStage.npz")
+            self.dataset_val[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
         for k in self.dataset_tr:
-            self.dataset_tr[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage,
-                                                                  k + "_segFromPrevStage.npz")
+            self.dataset_tr[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
 
     def get_basic_generators(self):
         self.load_dataset()
         self.do_split()
-
         if self.threeD:
             dl_tr = DataLoader3D(self.dataset_tr, self.basic_generator_patch_size, self.patch_size, self.batch_size,
                                  True, oversample_foreground_percent=self.oversample_foreground_percent,
@@ -260,13 +253,6 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
                 else:
                     softmax_fname = None
 
-                """There is a problem with python process communication that prevents us from communicating obejcts 
-                larger than 2 GB between processes (basically when the length of the pickle string that will be sent is 
-                communicated by the multiprocessing.Pipe object then the placeholder (\%i I think) does not allow for long 
-                enough strings (lol). This could be fixed by changing i to l (for long) but that would require manually 
-                patching system python code. We circumvent that problem here by saving softmax_pred to a npy file that will 
-                then be read (and finally deleted) by the Process. save_segmentation_nifti_from_softmax can take either 
-                filename or np.ndarray and will handle this automatically"""
                 if np.prod(softmax_pred.shape) > (2e9 / 4 * 0.85):  # *0.85 just to be save
                     np.save(join(output_folder, fname + ".npy"), softmax_pred)
                     softmax_pred = join(output_folder, fname + ".npy")
@@ -295,20 +281,10 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
                              json_name=job_name + " val tiled %s" % (str(use_sliding_window)),
                              json_task=task, num_threads=default_num_threads)
 
-        # in the old nnunet we would stop here. Now we add a postprocessing. This postprocessing can remove everything
-        # except the largest connected component for each class. To see if this improves results, we do this for all
-        # classes and then rerun the evaluation. Those classes for which this resulted in an improved dice score will
-        # have this applied during inference as well
         self.print_to_log_file("determining postprocessing")
         determine_postprocessing(self.output_folder, self.gt_niftis_folder, validation_folder_name,
                                  final_subf_name=validation_folder_name + "_postprocessed", debug=debug)
-        # after this the final predictions for the vlaidation set can be found in validation_folder_name_base + "_postprocessed"
-        # They are always in that folder, even if no postprocessing as applied!
 
-        # detemining postprocesing on a per-fold basis may be OK for this fold but what if another fold finds another
-        # postprocesing to be better? In this case we need to consolidate. At the time the consolidation is going to be
-        # done we won't know what self.gt_niftis_folder was, so now we copy all the niftis into a separate folder to
-        # be used later
         gt_nifti_folder = join(self.output_folder_base, "gt_niftis")
         maybe_mkdir_p(gt_nifti_folder)
         for f in subfiles(self.gt_niftis_folder, suffix=".nii.gz"):
