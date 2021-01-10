@@ -3,6 +3,6 @@
 experiments.udb
 **/.DS_Store
 # **/configs
-!pickle_view.ipynb
+!**/pickle_view.ipynb
 /DATASET/
 
