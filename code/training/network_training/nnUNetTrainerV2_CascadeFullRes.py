@@ -17,8 +17,6 @@ from utils import to_one_hot
 import shutil
 from torch import nn
 matplotlib.use("agg")
-
-
 class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
     def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
                  unpack_data=True, deterministic=True, previous_trainer="nnUNetTrainerV2", fp16=False):
@@ -82,10 +80,6 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
         self.data_aug_params['all_segmentation_labels'] = list(range(1, self.num_classes))
 
     def initialize(self, training=True, force_load_plans=False):
-        """
-        For prediction of test cases just set training=False, this will prevent loading of training data and
-        training batchgenerator initialization
-        """
         if not self.was_initialized:
             if force_load_plans or (self.plans is None):
                 self.load_plans_file()
@@ -94,22 +88,13 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
             self.setup_DA_params()
 
             ################# Here we wrap the loss for deep supervision ############
-            # we need to know the number of outputs of the network
             net_numpool = len(self.net_num_pool_op_kernel_sizes)
-
-            # we give each output a weight which decreases exponentially (division by 2) as the resolution decreases
-            # this gives higher resolution outputs more weight in the loss
             weights = np.array([1 / (2 ** i) for i in range(net_numpool)])
-
-            # we don't use the lowest 2 outputs. Normalize weights so that they sum to 1
             mask = np.array([True if i < net_numpool - 1 else False for i in range(net_numpool)])
             weights[~mask] = 0
             weights = weights / weights.sum()
             self.ds_loss_weights = weights
-            # now wrap the loss
             self.loss = MultipleOutputLoss2(self.loss, self.ds_loss_weights)
-            ################# END ###################
-
             self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] +
                                                       "_stage%d" % self.stage)
 

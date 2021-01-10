@@ -30,12 +30,10 @@ from torch.optim.lr_scheduler import _LRScheduler
 
 class nnUNetTrainerV2_DDP(nnUNetTrainerV2):
     def __init__(self, plans_file, fold, local_rank, output_folder=None, dataset_directory=None, batch_dice=True,
-                 stage=None,
-                 unpack_data=True, deterministic=True, distribute_batch_size=False, fp16=False):
+                 stage=None, unpack_data=True, deterministic=True, distribute_batch_size=False, fp16=False):
         super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage,
                          unpack_data, deterministic, fp16)
-        self.init_args = (
-            plans_file, fold, local_rank, output_folder, dataset_directory, batch_dice, stage, unpack_data,
+        self.init_args = (plans_file, fold, local_rank, output_folder, dataset_directory, batch_dice, stage, unpack_data,
             deterministic, distribute_batch_size, fp16)
         self.distribute_batch_size = distribute_batch_size
         np.random.seed(local_rank)
@@ -143,14 +141,8 @@ class nnUNetTrainerV2_DDP(nnUNetTrainerV2):
                         "INFO: Not unpacking data! Training may be slow due to that. Pray you are not using 2d or you "
                         "will wait all winter for your model to finish!")
 
-                # setting weights for deep supervision losses
                 net_numpool = len(self.net_num_pool_op_kernel_sizes)
-
-                # we give each output a weight which decreases exponentially (division by 2) as the resolution decreases
-                # this gives higher resolution outputs more weight in the loss
                 weights = np.array([1 / (2 ** i) for i in range(net_numpool)])
-
-                # we don't use the lowest 2 outputs. Normalize weights so that they sum to 1
                 mask = np.array([True if i < net_numpool - 1 else False for i in range(net_numpool)])
                 weights[~mask] = 0
                 weights = weights / weights.sum()
