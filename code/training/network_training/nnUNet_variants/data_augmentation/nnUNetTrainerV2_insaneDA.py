@@ -1,25 +1,10 @@
-#    Copyright 2020 Division of Medical Image Computing, German Cancer Research Center (DKFZ), Heidelberg, Germany
-#
-#    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
-#    You may obtain a copy of the License at
-#
-#        http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS,
-#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#    See the License for the specific language governing permissions and
-#    limitations under the License.
-
-
 import numpy as np
 from batchgenerators.utilities.file_and_folder_operations import join, maybe_mkdir_p
 from network_architecture.neural_network import SegmentationNetwork
 from training.data_augmentation.default_data_augmentation import default_3D_augmentation_params, \
     default_2D_augmentation_params, get_patch_size, get_insaneDA_augmentation
 from training.dataloading.dataset_loading import unpack_dataset
-from training.loss_functions.deep_supervision import MultipleOutputLoss2
+from loss_functions.deep_supervision import MultipleOutputLoss2
 from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
 from torch import nn
 
