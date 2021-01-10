@@ -51,12 +51,12 @@ class nnUNetTrainer(NetworkTrainer):
 
         self.folder_with_preprocessed_data = None
 
-        # set in self.initialize()
-
         self.dl_tr = self.dl_val = None
+        
+        # loaded automatically from plans_file
         self.num_input_channels = self.num_classes = self.net_pool_per_axis = self.patch_size = self.batch_size = \
             self.threeD = self.base_num_features = self.intensity_properties = self.normalization_schemes = \
-            self.net_num_pool_op_kernel_sizes = self.net_conv_kernel_sizes = None  # loaded automatically from plans_file
+            self.net_num_pool_op_kernel_sizes = self.net_conv_kernel_sizes = None  
         self.basic_generator_patch_size = self.data_aug_params = self.transpose_forward = self.transpose_backward = None
 
         self.batch_dice = batch_dice
@@ -312,6 +312,7 @@ class nnUNetTrainer(NetworkTrainer):
         self.normalization_schemes = plans['normalization_schemes']
         self.base_num_features = plans['base_num_features']
         self.num_input_channels = plans['num_modalities']
+        
         self.num_classes = plans['num_classes'] + 1  # background is no longer in num_classes
         self.classes = plans['all_classes']
         self.use_mask_for_norm = plans['use_mask_for_norm']
@@ -494,8 +495,7 @@ class nnUNetTrainer(NetworkTrainer):
                          'validation_folder_name': validation_folder_name,
                          'debug': debug,
                          'all_in_gpu': all_in_gpu,
-                         'segmentation_export_kwargs': segmentation_export_kwargs,
-                         }
+                         'segmentation_export_kwargs': segmentation_export_kwargs,}
         save_json(my_input_args, join(output_folder, "validation_args.json"))
 
         if do_mirroring:

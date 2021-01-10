@@ -106,10 +106,6 @@ class NetworkTrainer(object):
         pass
 
     def do_split(self):
-        """
-        This is a suggestion for if your dataset is a dictionary (my personal standard)
-        :return:
-        """
         splits_file = join(self.dataset_directory, "splits_final.pkl")
         if not isfile(splits_file):
             self.print_to_log_file("Creating new split...")
@@ -306,12 +302,6 @@ class NetworkTrainer(object):
         pass
 
     def load_checkpoint_ram(self, checkpoint, train=True):
-        """
-        used for if the checkpoint is already in ram
-        :param checkpoint:
-        :param train:
-        :return:
-        """
         if not self.was_initialized:
             self.initialize(train)
 

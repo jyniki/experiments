@@ -356,7 +356,6 @@ def aggregate_scores(test_ref_pairs,
         timestamp = datetime.today()
         json_dict["timestamp"] = str(timestamp)
         json_dict["task"] = json_task
-        json_dict["author"] = json_author
         json_dict["results"] = all_scores
         json_dict["id"] = hashlib.md5(json.dumps(json_dict).encode("utf-8")).hexdigest()[:12]
         save_json(json_dict, json_output_file)
@@ -396,7 +395,6 @@ def aggregate_scores_for_experiment(score_file,
     timestamp = datetime.today()
     json_dict["timestamp"] = str(timestamp)
     json_dict["task"] = json_task
-    json_dict["author"] = json_author
     json_dict["results"] = {"all": results, "mean": results_mean}
     json_dict["id"] = hashlib.md5(json.dumps(json_dict).encode("utf-8")).hexdigest()[:12]
     if json_output_file is not None:
