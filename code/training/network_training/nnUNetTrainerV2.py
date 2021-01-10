@@ -344,7 +344,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
     def on_epoch_end(self):
         """
         overwrite patient-based early stopping. Always run to 1000 epochs
-        :return:
         """
         super().on_epoch_end()
         continue_training = self.epoch < self.max_num_epochs
@@ -367,7 +366,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
         continued epoch with self.initial_lr
 
         we also need to make sure deep supervision in the network is enabled for training, thus the wrapper
-        :return:
         """
         self.maybe_update_lr(self.epoch)  
         ds = self.network.do_ds

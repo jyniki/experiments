@@ -71,11 +71,13 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
 
     trainer.network.eval()
 
-    # predict validation
-    trainer.validate(save_softmax=npz_flag)
 
+    trainer.data_init()
+    
     if network == '3d_lowres':
         trainer.load_best_checkpoint(False)
         print("predicting segmentations for the next stage of the cascade")
         predict_next_stage(trainer, join(dataset_directory, trainer.plans['data_identifier'] + "_stage%d" % 1))
 
+    # predict validation
+    trainer.validate(save_softmax=npz_flag)
