@@ -37,13 +37,14 @@ inference_args:
   input_folder: nnUNet_raw/nnUNet_raw_data/Task003_Liver/imagesTe
   output_folder: output
   task_id: 3
-  model: 3d_fullres  # 2d, 3d_fullres, 3d_lowres, 3d_cascade_fullres
+  model: 3d_lowres  # 2d, 3d_fullres, 3d_lowres, 3d_cascade_fullres
   folds: [4] # [0, 1, 2, 3, 4]
-  save_npz: True
+  save_npz: False #True
   gpus: 1
-  mode: normal  # normal, fast, fastest
+  mode: fastest  # normal, fast, fastest
   disable_mixed_precision: False
   overwrite_existing: False   # set false, if exist: exit
   using_pretrain: True
+  eval_flag: True
   
 

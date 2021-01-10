@@ -15,11 +15,15 @@ def pipeline():
     parser = argparse.ArgumentParser()
     parser.add_argument("-y", "--yaml", type=str, default='./configs/configs.yaml')
     parser.add_argument("-o", "--operation", type=int, nargs="+", default=0)
-    
+    parser.add_argument("-gpus","--gpus",type=str,default="0,1,2,3")
     args = parser.parse_args()
     operation_type = args.operation
     config = yaml.load(open(args.yaml, 'r'), Loader=yaml.FullLoader)
+    
+    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus
+    
     if 0 in operation_type:
+        print("CUDA_VISIBLE_DEVICES:"+ args.gpus)
         print( "operation_type: \n"
                 "   1 -- convert_decathlon \n"
                 "   2 -- data_preprocess \n"
@@ -60,19 +64,21 @@ def pipeline():
             run_training_DP.train(network,network_trainer,task,fold,disable_saving, npz_flag, validation_only,continue_training, gpus, dbs_flag)
         
         elif config['train_module'] == 'ddp':
-            print("training_ddp")
-            gpus = config['training_ddp']['gpus']
-            network_trainer = config['training_ddp']['network_trainer']
-            device_id = config['training_ddp']['device_id']
-            command = "/data0/JY/anaconda3/envs/myenv/bin/python -m torch.distributed.launch --master_port=4321 --nproc_per_node=%d run/run_training_DDP.py %s %s %d %d "%(gpus,network,network_trainer,task,fold)
-            dbs_flag = config['training_ddp']['dbs']
+            # TODO
+            print("TODO")
+            # print("training_ddp")
+            # gpus = config['training_ddp']['gpus']
+            # network_trainer = config['training_ddp']['network_trainer']
+            # device_id = config['training_ddp']['device_id']
+            # command = "/data0/JY/anaconda3/envs/myenv/bin/python -m torch.distributed.launch --master_port=4321 --nproc_per_node=%d run/run_training_DDP.py %s %s %d %d "%(gpus,network,network_trainer,task,fold)
+            # dbs_flag = config['training_ddp']['dbs']
             
-            # python -m torch.distributed.launch --master_port=4321 --nproc_per_node=4 run/run_training_DDP.py 3d_fullres nnUNetTrainerV2_DDP 8 4 --local_rank 1
-            print(command)
-            if not dbs_flag:
-                os.system(command)
-            else:
-                os.system(command+"--dbs")
+            # # python -m torch.distributed.launch --master_port=4321 --nproc_per_node=4 run/run_training_DDP.py 3d_fullres nnUNetTrainerV2_DDP 8 4 --local_rank 1
+            # print(command)
+            # if not dbs_flag:
+            #     os.system(command)
+            # else:
+            #     os.system(command+"--dbs")
             
         else:
             print("training_single_gpu")
@@ -93,10 +99,11 @@ def pipeline():
         disable_mixed_precision = config['inference_args']['disable_mixed_precision']
         using_pretrain = config['inference_args']['using_pretrain']
         overwrite_existing = config['inference_args']['overwrite_existing']
-        print("inference_parse, mode:" + mode)
+        eval_flag = config['inference_args']['eval_flag']
+        print("inference_parse, mode:" + mode + ", eval_flag:" + str(eval_flag))
         
         predicts.predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, \
-            disable_mixed_precision,mode,using_pretrain,overwrite_existing)
+            disable_mixed_precision,mode,using_pretrain,overwrite_existing,eval_flag)
         
     
 if __name__ == "__main__":

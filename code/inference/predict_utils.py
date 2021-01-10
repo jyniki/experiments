@@ -562,7 +562,8 @@ def predict_from_folder(model: str, input_folder: str, output_folder: str, folds
         else:
             all_in_gpu = overwrite_all_in_gpu
 
-        assert save_npz is False
+        # assert save_npz is False
+        save_npz = False
         return predict_cases_fast(model, list_of_lists[part_id::num_parts], output_files[part_id::num_parts], folds,
                                   num_threads_preprocessing, num_threads_nifti_save, lowres_segmentations,
                                   tta, mixed_precision=mixed_precision, overwrite_existing=overwrite_existing, all_in_gpu=all_in_gpu,
@@ -574,7 +575,8 @@ def predict_from_folder(model: str, input_folder: str, output_folder: str, folds
         else:
             all_in_gpu = overwrite_all_in_gpu
 
-        assert save_npz is False
+        # assert save_npz is False
+        save_npz = False
         return predict_cases_fastest(model, list_of_lists[part_id::num_parts], output_files[part_id::num_parts], folds,
                                      num_threads_preprocessing, num_threads_nifti_save, lowres_segmentations,
                                      tta, mixed_precision=mixed_precision, overwrite_existing=overwrite_existing, all_in_gpu=all_in_gpu,
