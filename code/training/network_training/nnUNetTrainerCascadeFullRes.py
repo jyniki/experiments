@@ -92,8 +92,6 @@ class nnUNetTrainerCascadeFullRes(nnUNetTrainer):
         """
         For prediction of test cases just set training=False, this will prevent loading of training data and
         training batchgenerator initialization
-        :param training:
-        :return:
         """
         if force_load_plans or (self.plans is None):
             self.load_plans_file()
@@ -179,8 +177,7 @@ class nnUNetTrainerCascadeFullRes(nnUNetTrainer):
             data = np.load(self.dataset[k]['data_file'])['data']
 
             # concat segmentation of previous step
-            seg_from_prev_stage = np.load(join(self.folder_with_segs_from_prev_stage,
-                                               k + "_segFromPrevStage.npz"))['data'][None]
+            seg_from_prev_stage = np.load(join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz"))['data'][None]
 
             print(data.shape)
             data[-1][data[-1] == -1] = 0
@@ -206,13 +203,6 @@ class nnUNetTrainerCascadeFullRes(nnUNetTrainer):
             else:
                 softmax_fname = None
 
-            """There is a problem with python process communication that prevents us from communicating obejcts 
-            larger than 2 GB between processes (basically when the length of the pickle string that will be sent is 
-            communicated by the multiprocessing.Pipe object then the placeholder (\%i I think) does not allow for long 
-            enough strings (lol). This could be fixed by changing i to l (for long) but that would require manually 
-            patching system python code. We circumvent that problem here by saving softmax_pred to a npy file that will 
-            then be read (and finally deleted) by the Process. save_segmentation_nifti_from_softmax can take either 
-            filename or np.ndarray and will handle this automatically"""
             if np.prod(softmax_pred.shape) > (2e9 / 4 * 0.85):  # *0.85 just to be save
                 np.save(fname + ".npy", softmax_pred)
                 softmax_pred = fname + ".npy"
@@ -222,10 +212,7 @@ class nnUNetTrainerCascadeFullRes(nnUNetTrainer):
                                                        properties, interpolation_order, self.regions_class_order,
                                                        None, None,
                                                        softmax_fname, None, force_separate_z,
-                                                       interpolation_order_z),
-                                                      )
-                                                     )
-                           )
+                                                       interpolation_order_z),)))
 
             pred_gt_tuples.append([join(output_folder, fname + ".nii.gz"),
                                    join(self.gt_niftis_folder, fname + ".nii.gz")])
