@@ -1,5 +1,9 @@
+'''
+Author: Niki
+Date: 2021-01-09 02:31:06
+Description: 
+'''
 from torch import nn, Tensor
-
 
 class RobustCrossEntropyLoss(nn.CrossEntropyLoss):
     """
