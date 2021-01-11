@@ -45,6 +45,6 @@ inference_args:
   disable_mixed_precision: False
   overwrite_existing: False   # set false, if exist: exit
   using_pretrain: True
-  eval_flag: False #True
+  eval_flag: True 
   
 
