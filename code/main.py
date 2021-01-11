@@ -90,6 +90,7 @@ def pipeline():
         from inference import predicts
         input_folder = config['inference_args']['input_folder']
         output_folder = config['inference_args']['output_folder']
+        gt_folder = config['inference_args']['gt_folder']
         task_id = str(config['inference_args']['task_id'])
         model = config['inference_args']['model']
         folds = config['inference_args']['folds']
@@ -103,8 +104,8 @@ def pipeline():
         default_trainer = config['inference_args']['default_trainer']
         print("inference_parse, mode:" + mode + ", eval_flag:" + str(eval_flag))
         
-        predicts.predict_simple(input_folder, output_folder, task_id, default_trainer, model, folds, save_npz, gpus, \
-            disable_mixed_precision,mode,using_pretrain,overwrite_existing,eval_flag)
+        predicts.predict_simple(input_folder, output_folder, gt_folder, task_id, default_trainer, model, folds, save_npz, gpus, \
+                                disable_mixed_precision,mode,using_pretrain,overwrite_existing,eval_flag)
         
     
 if __name__ == "__main__":

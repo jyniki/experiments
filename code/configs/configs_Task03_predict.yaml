@@ -35,6 +35,7 @@ train_module: dp  # single ,dp, ddp
 
 inference_args:
   input_folder: nnUNet_raw/nnUNet_raw_data/Task003_Liver/imagesTs
+  gt_folder: nnUNet_raw/nnUNet_raw_data/Task03_Liver/labelsTs
   output_folder: output
   task_id: 3
   model: 3d_cascade_fullres  # 2d, 3d_fullres, 3d_lowres, 3d_cascade_fullres

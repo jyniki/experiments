@@ -5,8 +5,7 @@ Description:
 '''
 import torch
 from inference.predict_utils import predict_from_folder
-from paths import DATASET_DIR, default_plans_identifier, preprocessing_output_dir, nnUNet_raw_data, \
-    network_training_output_dir, pre_training_output_dir, default_cascade_trainer
+from paths import DATASET_DIR, default_plans_identifier, network_training_output_dir, pre_training_output_dir, default_cascade_trainer
 
 from batchgenerators.utilities.file_and_folder_operations import join, isdir, os
 from utils import convert_id_to_task_name
@@ -14,7 +13,7 @@ from evaluation.evaluator import aggregate_scores
 from configuration import default_num_threads
 
 
-def predict_simple(input_folder, output_folder, task_id, default_trainer,
+def predict_simple(input_folder, output_folder, gt_folder ,task_id, default_trainer,
                    model, folds, save_npz, gpus, disable_mixed_precision, 
                    mode, using_pretrain, overwrite_existing, eval_flag):
     # default_trainer: nnUNetTrainerV2, can change to nnUNetTrainerV2_DP or nnUNetTrainerV2_DDP
@@ -100,11 +99,9 @@ def predict_simple(input_folder, output_folder, task_id, default_trainer,
                         mixed_precision=not disable_mixed_precision,
                         step_size=step_size, checkpoint_name="model_final_checkpoint")
 
-    # TODO
     if eval_flag:
         task = output_folder.split('/')[-1]
-        # gt_folder = join(preprocessing_output_dir,task,"gt_segmentations")
-        gt_folder = join(nnUNet_raw_data,"Task03_Liver","labelsTs")
+        gt_folder = join(gt_folder)
         predict_val(output_folder,gt_folder)
     
 def predict_val(pre_folder,gt_folder):
@@ -112,7 +109,7 @@ def predict_val(pre_folder,gt_folder):
     pred_gt_tuples = []
     for fname in os.listdir(pre_folder):
         if(fname.split('.')[-1]=="gz"):
-            pred_gt_tuples.append([join(pre_folder, fname), join(gt_folder, fname)])
+            pred_gt_tuples.append([join(pre_folder, fname), join(gt_folder, fname.replace("Image", "Label"))])
     task = pre_folder.split('/')[-2]
     
     f = open(join(pre_folder,"plans.pkl"),'rb')  
