@@ -448,6 +448,7 @@ class nnUNetTrainer(NetworkTrainer):
                                       use_gaussian=use_gaussian, pad_border_mode=pad_border_mode,
                                       pad_kwargs=pad_kwargs, all_in_gpu=all_in_gpu, verbose=verbose,
                                       mixed_precision=mixed_precision)
+        
         self.network.train(current_mode)
         return ret
 

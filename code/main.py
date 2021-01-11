@@ -100,9 +100,10 @@ def pipeline():
         using_pretrain = config['inference_args']['using_pretrain']
         overwrite_existing = config['inference_args']['overwrite_existing']
         eval_flag = config['inference_args']['eval_flag']
+        default_trainer = config['inference_args']['default_trainer']
         print("inference_parse, mode:" + mode + ", eval_flag:" + str(eval_flag))
         
-        predicts.predict_simple(input_folder, output_folder, task_id, model, folds, save_npz, gpus, \
+        predicts.predict_simple(input_folder, output_folder, task_id, default_trainer, model, folds, save_npz, gpus, \
             disable_mixed_precision,mode,using_pretrain,overwrite_existing,eval_flag)
         
     
