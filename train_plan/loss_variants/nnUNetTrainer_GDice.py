@@ -1,7 +1,12 @@
-from nnunet.training.loss_functions.dice_loss import GDiceLossV2
+'''
+Author: Niki
+Date: 2021-01-12 00:17:00
+Description: 
+'''
+from loss_functions.dice_loss import GDiceLossV2
 # from nnunet.training.loss_functions.dice_loss import GDiceLoss
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
-from nnunet.utilities.nd_softmax import softmax_helper
+from training.network_training.nnUNetTrainer import nnUNetTrainer
+from utils import softmax_helper
 
 
 class nnUNetTrainer_GDice(nnUNetTrainer):

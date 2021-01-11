@@ -1,6 +1,11 @@
-from nnunet.training.loss_functions.dice_loss import IoULoss
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
-from nnunet.utilities.nd_softmax import softmax_helper
+'''
+Author: Niki
+Date: 2021-01-12 00:17:00
+Description: 
+'''
+from loss_functions.dice_loss import IoULoss
+from training.network_training.nnUNetTrainer import nnUNetTrainer
+from utils import softmax_helper
 
 
 class nnUNetTrainer_Iou(nnUNetTrainer):

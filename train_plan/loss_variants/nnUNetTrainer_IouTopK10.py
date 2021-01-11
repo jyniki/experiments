@@ -1,5 +1,10 @@
-from nnunet.training.loss_functions.dice_loss import Iou_and_TopK_loss
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
+'''
+Author: Niki
+Date: 2021-01-12 00:17:00
+Description: 
+'''
+from loss_functions.dice_loss import Iou_and_TopK_loss
+from training.network_training.nnUNetTrainer import nnUNetTrainer
 
 
 class nnUNetTrainer_IouTopK10(nnUNetTrainer):

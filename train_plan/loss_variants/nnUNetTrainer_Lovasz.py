@@ -1,5 +1,10 @@
-from nnunet.training.loss_functions.lovasz_loss import LovaszSoftmax
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
+'''
+Author: Niki
+Date: 2021-01-12 00:17:00
+Description: 
+'''
+from loss_functions.lovasz_loss import LovaszSoftmax
+from training.network_training.nnUNetTrainer import nnUNetTrainer
 # from nnunet.utilities.nd_softmax import softmax_helper
 
 

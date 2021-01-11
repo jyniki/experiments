@@ -1,5 +1,10 @@
-from nnunet.training.loss_functions.dice_loss import ExpLog_loss
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
+'''
+Author: Niki
+Date: 2021-01-12 00:16:59
+Description: 
+'''
+from loss_functions.dice_loss import ExpLog_loss
+from training.network_training.nnUNetTrainer import nnUNetTrainer
 import torch
 
 

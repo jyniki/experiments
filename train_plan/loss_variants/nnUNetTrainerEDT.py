@@ -5,15 +5,15 @@ from batchgenerators.transforms import DataChannelSelectionTransform, SegChannel
 from batchgenerators.transforms import MirrorTransform, NumpyToTensor
 from batchgenerators.transforms.utility_transforms import RemoveLabelTransform, AppendChannelsTransform
 from batchgenerators.utilities.file_and_folder_operations import *
-from nnunet.training.data_augmentation.custom_transforms import Convert3DTo2DTransform, Convert2DTo3DTransform, \
+from training.data_augmentation.custom_transforms import Convert3DTo2DTransform, Convert2DTo3DTransform, \
     MaskTransform
-from nnunet.training.data_augmentation.default_data_augmentation import default_3D_augmentation_params
-from nnunet.training.data_augmentation.pyramid_augmentations import MoveSegAsOneHotToData, \
+from training.data_augmentation.default_data_augmentation import default_3D_augmentation_params
+from training.data_augmentation.pyramid_augmentations import MoveSegAsOneHotToData, \
     RemoveRandomConnectedComponentFromOneHotEncodingTransform, ApplyRandomBinaryOperatorTransform
-from nnunet.training.dataloading.dataset_loading import unpack_dataset
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
-from nnunet.training.loss_functions.boundary_loss import DC_and_BD_loss
-from nnunet.training.loss_functions.boundary_loss import BDLoss
+from training.dataloading.dataset_loading import unpack_dataset
+from training.network_training.nnUNetTrainer import nnUNetTrainer
+from loss_functions.boundary_loss import DC_and_BD_loss
+from loss_functions.boundary_loss import BDLoss
 try:
     from apex import amp
 except ImportError:

@@ -1,5 +1,10 @@
-from nnunet.training.loss_functions.ND_Crossentropy import CrossentropyND
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
+'''
+Author: Niki
+Date: 2021-01-12 00:17:01
+Description: 
+'''
+from loss_functions.ND_Crossentropy import CrossentropyND
+from training.network_training.nnUNetTrainer import nnUNetTrainer
 
 
 class nnUNetTrainerCE(nnUNetTrainer):

@@ -1,5 +1,10 @@
-from nnunet.training.loss_functions.boundary_loss import HDDTBinaryLoss
-from nnunet.training.network_training.nnUNetTrainer import nnUNetTrainer
+'''
+Author: Niki
+Date: 2021-01-12 00:17:00
+Description: 
+'''
+from loss_functions.boundary_loss import HDDTBinaryLoss
+from training.network_training.nnUNetTrainer import nnUNetTrainer
 
 
 class nnUNetTrainer_HDBinary(nnUNetTrainer):
