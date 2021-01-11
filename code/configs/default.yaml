@@ -4,7 +4,7 @@ pretrain_identifier: Pretrain               # store the download pretrain models
 default_plans_identifier: nnUNetPlansv2.1   # using on Preprocessed
 default_data_identifier: nnUNet             # using on ExperimentPlanner
 default_trainer: nnUNetTrainerV2_DP         # using on Predict
-default_cascade_trainer: nnUNetTrainerV2CascadeFullRes
+default_cascade_trainer: nnUNetTrainerV2CascadeFullRes_DP # using on Cascade Predict
 nnUNet_def_n_proc: 8
 tl: 8
 tf: 8
