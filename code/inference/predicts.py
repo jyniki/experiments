@@ -5,7 +5,7 @@ Description:
 '''
 import torch
 from inference.predict_utils import predict_from_folder
-from paths import DATASET_DIR, default_plans_identifier, preprocessing_output_dir, \
+from paths import DATASET_DIR, default_plans_identifier, nnUNet_raw_data, \
     network_training_output_dir, pre_training_output_dir, default_cascade_trainer, default_trainer
 
 from batchgenerators.utilities.file_and_folder_operations import join, isdir, os
@@ -103,7 +103,7 @@ def predict_simple(input_folder, output_folder, task_id,
     # TODO
     if eval_flag:
         task = output_folder.split('/')[-1]
-        gt_folder = join(preprocessing_output_dir,task,"gt_segmentations")
+        gt_folder = join(nnUNet_raw_data,task,"labelsTs")
         predict_val(output_folder,gt_folder)
     
 def predict_val(pre_folder,gt_folder):
@@ -111,7 +111,7 @@ def predict_val(pre_folder,gt_folder):
     pred_gt_tuples = []
     for fname in os.listdir(pre_folder):
         if(fname.split('.')[-1]=="gz"):
-            pred_gt_tuples.append([join(pre_folder, fname), join(gt_folder, fname)])
+            pred_gt_tuples.append([join(pre_folder, fname), join(gt_folder, fname.replace("Image", "Label"))])
     task = pre_folder.split('/')[-2]
     
     f = open(join(pre_folder,"plans.pkl"),'rb')  
