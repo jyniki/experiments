@@ -5,8 +5,8 @@ Description:
 '''
 import torch
 from inference.predict_utils import predict_from_folder
-from paths import DATASET_DIR, default_plans_identifier, preprocessing_output_dir, \
-    network_training_output_dir, pre_training_output_dir, default_cascade_trainer, default_trainer
+from paths import DATASET_DIR, default_plans_identifier, preprocessing_output_dir, nnUNet_raw_data, \
+    network_training_output_dir, pre_training_output_dir, default_cascade_trainer
 
 from batchgenerators.utilities.file_and_folder_operations import join, isdir, os
 from utils import convert_id_to_task_name
@@ -14,7 +14,7 @@ from evaluation.evaluator import aggregate_scores
 from configuration import default_num_threads
 
 
-def predict_simple(input_folder, output_folder, task_id, 
+def predict_simple(input_folder, output_folder, task_id, default_trainer,
                    model, folds, save_npz, gpus, disable_mixed_precision, 
                    mode, using_pretrain, overwrite_existing, eval_flag):
     # default_trainer: nnUNetTrainerV2, can change to nnUNetTrainerV2_DP or nnUNetTrainerV2_DDP
@@ -103,7 +103,8 @@ def predict_simple(input_folder, output_folder, task_id,
     # TODO
     if eval_flag:
         task = output_folder.split('/')[-1]
-        gt_folder = join(preprocessing_output_dir,task,"gt_segmentations")
+        # gt_folder = join(preprocessing_output_dir,task,"gt_segmentations")
+        gt_folder = join(nnUNet_raw_data,"Task03_Liver","labelsTs")
         predict_val(output_folder,gt_folder)
     
 def predict_val(pre_folder,gt_folder):

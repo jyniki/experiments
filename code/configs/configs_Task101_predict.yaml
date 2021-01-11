@@ -37,14 +37,16 @@ inference_args:
   input_folder: nnUNet_raw/nnUNet_raw_data/Task101_Ovary/imagesTs
   output_folder: output
   task_id: 101
-  model: 3d_fullres  # 2d, 3d_fullres, 3d_lowres, 3d_cascade_fullres
+  model: 2d  # 2d, 3d_fullres, 3d_lowres, 3d_cascade_fullres
   folds: [0] # [0, 1, 2, 3, 4]
   save_npz: False #True
   gpus: 1
-  mode: fastest  # normal, fast, fastest
+  mode: normal  # normal, fast, fastest   ! 2d need use normal mode
   disable_mixed_precision: False
   overwrite_existing: False   # set false, if exist: exit
   using_pretrain: True
-  eval_flag: False #True
+  eval_flag: True
+  default_trainer: nnUNetTrainerV2
+  
   
 
