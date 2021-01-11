@@ -20,3 +20,7 @@ else:
     
 # determines what threshold to use for resampling the low resolution axis separately (with NN)
 RESAMPLING_SEPARATE_Z_ANISO_THRESHOLD = 3  
+
+network_config = yaml.load(open('./configs/network_trainer.yaml', 'r'), Loader=yaml.FullLoader)
+MAX_EPOCH = config['max_num_epochs']
+
