@@ -5,7 +5,8 @@ Description:
 '''
 import torch
 from inference.predict_utils import predict_from_folder
-from paths import DATASET_DIR, default_plans_identifier, network_training_output_dir, pre_training_output_dir, default_cascade_trainer
+from paths import DATASET_DIR, default_plans_identifier, network_training_output_dir, \
+                                pre_training_output_dir, default_cascade_trainer
 
 from batchgenerators.utilities.file_and_folder_operations import join, isdir, os
 from utils import convert_id_to_task_name
@@ -100,8 +101,8 @@ def predict_simple(input_folder, output_folder, gt_folder ,task_id, default_trai
                         step_size=step_size, checkpoint_name="model_final_checkpoint")
 
     if eval_flag:
-        task = output_folder.split('/')[-1]
-        gt_folder = join(gt_folder)
+        # task = output_folder.split('/')[-1]
+        gt_folder = join(DATASET_DIR,gt_folder)
         predict_val(output_folder,gt_folder)
     
 def predict_val(pre_folder,gt_folder):
