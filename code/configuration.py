@@ -24,5 +24,5 @@ default_cascade_trainer = config['default_cascade_trainer']
 RESAMPLING_SEPARATE_Z_ANISO_THRESHOLD = 3  
 
 network_config = yaml.load(open('./configs/network_trainer.yaml', 'r'), Loader=yaml.FullLoader)
-MAX_EPOCH = config['max_num_epochs']
+MAX_EPOCH = network_config['max_num_epochs']
 

@@ -44,7 +44,6 @@ def predict_next_stage(trainer, stage_to_be_predicted_folder):
     results = []
 
     ## val_dataset for 3d_cascade_fullres
-    '''
     for pat in trainer.dataset_val.keys():
         print(pat)
         data_file = trainer.dataset_val[pat]['data_file']
@@ -67,7 +66,6 @@ def predict_next_stage(trainer, stage_to_be_predicted_folder):
         results.append(export_pool.starmap_async(resample_and_save, [(predicted_probabilities, target_shp, output_file,
                                                                       force_separate_z, interpolation_order,
                                                                       interpolation_order_z)]))
-    '''
     
     ## train_dataset for 3d_cascade_fullres
     for pat in trainer.dataset_tr.keys():

@@ -98,7 +98,7 @@ def pipeline():
         gpus = config['inference_args']['gpus']
         mode = config['inference_args']['mode']
         disable_mixed_precision = config['inference_args']['disable_mixed_precision']
-        using_pretrain = config['inference_args']['using_pretrain']
+        using_pretrain = config['inference_args']['using_pretrain']   # using pretrain weight or trained weight
         overwrite_existing = config['inference_args']['overwrite_existing']
         eval_flag = config['inference_args']['eval_flag']
         default_trainer = config['inference_args']['default_trainer']
