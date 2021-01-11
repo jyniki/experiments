@@ -10,17 +10,8 @@ class PlainConvUNetEncoder(nn.Module):
                  pool_op_kernel_sizes, conv_kernel_sizes, props, default_return_skips=True,
                  max_num_features=480):
         """
-        Following UNet building blocks can be added by utilizing the properties this class exposes (TODO)
-
+        Following UNet building blocks can be added by utilizing the properties this class exposes
         this one includes the bottleneck layer!
-
-        :param input_channels:
-        :param base_num_features:
-        :param num_blocks_per_stage:
-        :param feat_map_mul_on_downscale:
-        :param pool_op_kernel_sizes:
-        :param conv_kernel_sizes:
-        :param props:
         """
         super(PlainConvUNetEncoder, self).__init__()
 
