@@ -20,8 +20,8 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
                  unpack_data=True, deterministic=True, num_gpus=1, distribute_batch_size=False, fp16=False):
         super(nnUNetTrainerV2_DP, self).__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage,
                                                 unpack_data, deterministic, fp16)
-        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
-                          deterministic, num_gpus, distribute_batch_size, fp16)
+        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
+                          unpack_data, deterministic, fp16, num_gpus, distribute_batch_size)
         self.num_gpus = num_gpus
         self.distribute_batch_size = distribute_batch_size
         self.dice_smooth = 1e-5
@@ -48,10 +48,6 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
         - replaced get_default_augmentation with get_moreDA_augmentation
         - only run this code once
         - loss function wrapper for deep supervision
-
-        :param training:
-        :param force_load_plans:
-        :return:
         """
         if not self.was_initialized:
             maybe_mkdir_p(self.output_folder)
@@ -60,7 +56,6 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
                 self.load_plans_file()
 
             self.process_plans(self.plans)
-
             self.setup_DA_params()
 
             ################# Here configure the loss for deep supervision ############
@@ -72,8 +67,7 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
             self.loss_weights = weights
             ################# END ###################
 
-            self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] +
-                                                      "_stage%d" % self.stage)
+            self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] + "_stage%d" % self.stage)
             if training:
                 self.dl_tr, self.dl_val = self.get_basic_generators()
                 if self.unpack_data:
@@ -86,15 +80,12 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
                         "will wait all winter for your model to finish!")
 
                 self.tr_gen, self.val_gen = get_moreDA_augmentation(self.dl_tr, self.dl_val,
-                                                                    self.data_aug_params[
-                                                                        'patch_size_for_spatialtransform'],
+                                                                    self.data_aug_params['patch_size_for_spatialtransform'],
                                                                     self.data_aug_params,
                                                                     deep_supervision_scales=self.deep_supervision_scales,
                                                                     pin_memory=self.pin_memory)
-                self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())),
-                                       also_print_to_console=False)
-                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())),
-                                       also_print_to_console=False)
+                self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())), also_print_to_console=False)
+                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())), also_print_to_console=False)
             else:
                 pass
 
@@ -141,12 +132,9 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
 
     def run_training(self):
         self.maybe_update_lr(self.epoch)
-
         # amp must be initialized before DP
-
         ds = self.network.do_ds
         self.network.do_ds = True
-        
         # self.network = DataParallel(self.network, tuple(range(self.num_gpus)), )
         self.network = DataParallel(self.network, device_ids = list(range(0, self.num_gpus)))
         

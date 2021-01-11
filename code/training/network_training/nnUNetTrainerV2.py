@@ -50,14 +50,8 @@ class nnUNetTrainerV2(nnUNetTrainer):
             self.setup_DA_params()
 
             ################# Here we wrap the loss for deep supervision ############
-            # we need to know the number of outputs of the network
             net_numpool = len(self.net_num_pool_op_kernel_sizes)
-
-            # we give each output a weight which decreases exponentially (division by 2) as the resolution decreases
-            # this gives higher resolution outputs more weight in the loss
             weights = np.array([1 / (2 ** i) for i in range(net_numpool)])
-
-            # we don't use the lowest 2 outputs. Normalize weights so that they sum to 1
             mask = np.array([True] + [True if i < net_numpool - 1 else False for i in range(1, net_numpool)])
             weights[~mask] = 0
             weights = weights / weights.sum()
@@ -79,14 +73,11 @@ class nnUNetTrainerV2(nnUNetTrainer):
                         "INFO: Not unpacking data! Training may be slow due to that. Pray you are not using 2d or you "
                         "will wait all winter for your model to finish!")
 
-                self.tr_gen, self.val_gen = get_moreDA_augmentation(
-                    self.dl_tr, self.dl_val,
-                    self.data_aug_params[
-                        'patch_size_for_spatialtransform'],
-                    self.data_aug_params,
-                    deep_supervision_scales=self.deep_supervision_scales,
-                    pin_memory=self.pin_memory
-                )
+                self.tr_gen, self.val_gen = get_moreDA_augmentation(self.dl_tr, self.dl_val,
+                                                                    self.data_aug_params['patch_size_for_spatialtransform'],
+                                                                    self.data_aug_params,
+                                                                    deep_supervision_scales=self.deep_supervision_scales,
+                                                                    pin_memory=self.pin_memory)
                 self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())),
                                        also_print_to_console=False)
                 self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())),
@@ -344,7 +335,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
     def on_epoch_end(self):
         """
         overwrite patient-based early stopping. Always run to 1000 epochs
-        :return:
         """
         super().on_epoch_end()
         continue_training = self.epoch < self.max_num_epochs
@@ -362,13 +352,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
         return continue_training
 
     def run_training(self):
-        """
-        if we run with -c then we need to set the correct lr for the first epoch, otherwise it will run the first
-        continued epoch with self.initial_lr
-
-        we also need to make sure deep supervision in the network is enabled for training, thus the wrapper
-        :return:
-        """
         self.maybe_update_lr(self.epoch)  
         ds = self.network.do_ds
         self.network.do_ds = True

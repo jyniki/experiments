@@ -140,8 +140,6 @@ class nnUNetTrainer(NetworkTrainer):
         """
         For prediction of test cases just set training=False, this will prevent loading of training data and
         training batchgenerator initialization
-        :param training:
-        :return:
         """
 
         maybe_mkdir_p(self.output_folder)
@@ -154,8 +152,8 @@ class nnUNetTrainer(NetworkTrainer):
         self.setup_DA_params()
 
         if training:
-            self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] +
-                                                      "_stage%d" % self.stage)
+            self.folder_with_preprocessed_data = join(self.dataset_directory, \
+                self.plans['data_identifier'] + "_stage%d" % self.stage)
 
             self.dl_tr, self.dl_val = self.get_basic_generators()
             if self.unpack_data:
@@ -167,13 +165,10 @@ class nnUNetTrainer(NetworkTrainer):
                     "INFO: Not unpacking data! Training may be slow due to that. Pray you are not using 2d or you "
                     "will wait all winter for your model to finish!")
             self.tr_gen, self.val_gen = get_default_augmentation(self.dl_tr, self.dl_val,
-                                                                 self.data_aug_params[
-                                                                     'patch_size_for_spatialtransform'],
+                                                                 self.data_aug_params['patch_size_for_spatialtransform'],
                                                                  self.data_aug_params)
-            self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())),
-                                   also_print_to_console=False)
-            self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())),
-                                   also_print_to_console=False)
+            self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())), also_print_to_console=False)
+            self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())), also_print_to_console=False)
         else:
             pass
         self.initialize_network()
@@ -456,6 +451,15 @@ class nnUNetTrainer(NetworkTrainer):
         self.network.train(current_mode)
         return ret
 
+
+    def data_init(self):
+        self.network.eval()
+        assert self.was_initialized, "must initialize, ideally with checkpoint (or train first)"
+        if self.dataset_val is None:
+            self.load_dataset()
+            self.do_split()
+            
+            
     def validate(self, do_mirroring: bool = True, use_sliding_window: bool = True, step_size: float = 0.5,
                  save_softmax: bool = True, use_gaussian: bool = True, overwrite: bool = True,
                  validation_folder_name: str = 'validation_raw', debug: bool = False, all_in_gpu: bool = False,
@@ -464,9 +468,9 @@ class nnUNetTrainer(NetworkTrainer):
         self.network.eval()
 
         assert self.was_initialized, "must initialize, ideally with checkpoint (or train first)"
-        if self.dataset_val is None:
-            self.load_dataset()
-            self.do_split()
+        # if self.dataset_val is None:
+        #     self.load_dataset()
+        #     self.do_split()
 
         if segmentation_export_kwargs is None:
             if 'segmentation_export_params' in self.plans.keys():

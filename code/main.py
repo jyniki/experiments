@@ -20,7 +20,7 @@ def pipeline():
     operation_type = args.operation
     config = yaml.load(open(args.yaml, 'r'), Loader=yaml.FullLoader)
     
-    os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus
+    # os.environ["CUDA_VISIBLE_DEVICES"] = args.gpus
     
     if 0 in operation_type:
         print("CUDA_VISIBLE_DEVICES:"+ args.gpus)

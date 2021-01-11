@@ -43,6 +43,8 @@ def predict_next_stage(trainer, stage_to_be_predicted_folder):
     export_pool = Pool(2)
     results = []
 
+    ## val_dataset for 3d_cascade_fullres
+    '''
     for pat in trainer.dataset_val.keys():
         print(pat)
         data_file = trainer.dataset_val[pat]['data_file']
@@ -65,7 +67,33 @@ def predict_next_stage(trainer, stage_to_be_predicted_folder):
         results.append(export_pool.starmap_async(resample_and_save, [(predicted_probabilities, target_shp, output_file,
                                                                       force_separate_z, interpolation_order,
                                                                       interpolation_order_z)]))
+    '''
+    
+    ## train_dataset for 3d_cascade_fullres
+    for pat in trainer.dataset_tr.keys():
+        print(pat)
+        data_file = trainer.dataset_tr[pat]['data_file']
+        data_preprocessed = np.load(data_file)['data'][:-1]
 
+        predicted_probabilities = trainer.predict_preprocessed_data_return_seg_and_softmax(
+            data_preprocessed, do_mirroring=trainer.data_aug_params["do_mirror"],
+            mirror_axes=trainer.data_aug_params['mirror_axes'], mixed_precision=trainer.fp16)[1]
+
+        data_file_nofolder = data_file.split("/")[-1]
+        data_file_nextstage = join(stage_to_be_predicted_folder, data_file_nofolder)
+        data_nextstage = np.load(data_file_nextstage)['data']
+        target_shp = data_nextstage.shape[1:]
+        output_file = join(output_folder, data_file_nextstage.split("/")[-1][:-4] + "_segFromPrevStage.npz")
+
+        if np.prod(predicted_probabilities.shape) > (2e9 / 4 * 0.85):  # *0.85 just to be save
+            np.save(output_file[:-4] + ".npy", predicted_probabilities)
+            predicted_probabilities = output_file[:-4] + ".npy"
+
+        results.append(export_pool.starmap_async(resample_and_save, [(predicted_probabilities, target_shp, output_file,
+                                                                      force_separate_z, interpolation_order,
+                                                                      interpolation_order_z)]))
+
+    
     _ = [i.get() for i in results]
     export_pool.close()
     export_pool.join()

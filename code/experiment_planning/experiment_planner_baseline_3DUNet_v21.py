@@ -10,7 +10,6 @@ from paths import *
 class ExperimentPlanner3D_v21(ExperimentPlanner):
     """
     Combines ExperimentPlannerPoolBasedOnSpacing and ExperimentPlannerTargetSpacingForAnisoAxis
-
     We also increase the base_num_features to 32. This is solely because mixed precision training with 3D convs and
     amp is A LOT faster if the number of filters is divisible by 8
     """
@@ -125,19 +124,15 @@ class ExperimentPlanner3D_v21(ExperimentPlanner):
             network_num_pool_per_axis, pool_op_kernel_sizes, conv_kernel_sizes, new_shp, \
             shape_must_be_divisible_by = get_pool_and_conv_props(current_spacing, new_shp,
                                                                  self.unet_featuremap_min_edge_length,
-                                                                 self.unet_max_numpool,
-                                                                 )
+                                                                 self.unet_max_numpool,)
 
             here = Generic_UNet.compute_approx_vram_consumption(new_shp, network_num_pool_per_axis,
                                                                 self.unet_base_num_features,
                                                                 self.unet_max_num_filters, num_modalities,
                                                                 num_classes, pool_op_kernel_sizes,
                                                                 conv_per_stage=self.conv_per_stage)
-            #print(new_shp)
-        #print(here, ref)
 
         input_patch_size = new_shp
-
         batch_size = Generic_UNet.DEFAULT_BATCH_SIZE_3D  # This is what wirks with 128**3
         batch_size = int(np.floor(max(ref / here, 1) * batch_size))
 
@@ -147,8 +142,7 @@ class ExperimentPlanner3D_v21(ExperimentPlanner):
         max_batch_size = max(max_batch_size, self.unet_min_batch_size)
         batch_size = min(batch_size, max_batch_size)
 
-        do_dummy_2D_data_aug = (max(input_patch_size) / input_patch_size[
-            0]) > self.anisotropy_threshold
+        do_dummy_2D_data_aug = (max(input_patch_size) / input_patch_size[0]) > self.anisotropy_threshold
 
         plan = {
             'batch_size': batch_size,

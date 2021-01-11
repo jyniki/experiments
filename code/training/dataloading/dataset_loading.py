@@ -142,29 +142,7 @@ class DataLoader3D(SlimDataLoaderBase):
     def __init__(self, data, patch_size, final_patch_size, batch_size, has_prev_stage=False,
                  oversample_foreground_percent=0.0, memmap_mode="r", pad_mode="edge", pad_kwargs_data=None,
                  pad_sides=None):
-        """
-        This is the basic data loader for 3D networks. It uses preprocessed data as produced by my (Fabian) preprocessing.
-        You can load the data with load_dataset(folder) where folder is the folder where the npz files are located. If there
-        are only npz files present in that folder, the data loader will unpack them on the fly. This may take a while
-        and increase CPU usage. Therefore, I advise you to call unpack_dataset(folder) first, which will unpack all npz
-        to npy. Don't forget to call delete_npy(folder) after you are done with training?
-        Why all the hassle? Well the decathlon dataset is huge. Using npy for everything will consume >1 TB and that is uncool
-        given that I (Fabian) will have to store that permanently on /datasets and my local computer. With this strategy all
-        data is stored in a compressed format (factor 10 smaller) and only unpacked when needed.
-        :param data: get this with load_dataset(folder, stage=0). Plug the return value in here and you are g2g (good to go)
-        :param patch_size: what patch size will this data loader return? it is common practice to first load larger
-        patches so that a central crop after data augmentation can be done to reduce border artifacts. If unsure, use
-        get_patch_size() from data_augmentation.default_data_augmentation
-        :param final_patch_size: what will the patch finally be cropped to (after data augmentation)? this is the patch
-        size that goes into your network. We need this here because we will pad patients in here so that patches at the
-        border of patients are sampled properly
-        :param batch_size:
-        :param num_batches: how many batches will the data loader produce before stopping? None=endless
-        :param seed:
-        :param stage: ignore this (Fabian only)
-        :param random: Sample keys randomly; CAREFUL! non-random sampling requires batch_size=1, otherwise you will iterate batch_size times over the dataset
-        :param oversample_foreground: half the batch will be forced to contain at least some foreground (equal prob for each of the foreground classes)
-        """
+       
         super(DataLoader3D, self).__init__(data, batch_size, None)
         if pad_kwargs_data is None:
             pad_kwargs_data = OrderedDict()
@@ -369,30 +347,7 @@ class DataLoader2D(SlimDataLoaderBase):
     def __init__(self, data, patch_size, final_patch_size, batch_size, oversample_foreground_percent=0.0,
                  memmap_mode="r", pseudo_3d_slices=1, pad_mode="edge",
                  pad_kwargs_data=None, pad_sides=None):
-        """
-        This is the basic data loader for 2D networks. It uses preprocessed data as produced by my (Fabian) preprocessing.
-        You can load the data with load_dataset(folder) where folder is the folder where the npz files are located. If there
-        are only npz files present in that folder, the data loader will unpack them on the fly. This may take a while
-        and increase CPU usage. Therefore, I advise you to call unpack_dataset(folder) first, which will unpack all npz
-        to npy. Don't forget to call delete_npy(folder) after you are done with training?
-        Why all the hassle? Well the decathlon dataset is huge. Using npy for everything will consume >1 TB and that is uncool
-        given that I (Fabian) will have to store that permanently on /datasets and my local computer. With htis strategy all
-        data is stored in a compressed format (factor 10 smaller) and only unpacked when needed.
-        :param data: get this with load_dataset(folder, stage=0). Plug the return value in here and you are g2g (good to go)
-        :param patch_size: what patch size will this data loader return? it is common practice to first load larger
-        patches so that a central crop after data augmentation can be done to reduce border artifacts. If unsure, use
-        get_patch_size() from data_augmentation.default_data_augmentation
-        :param final_patch_size: what will the patch finally be cropped to (after data augmentation)? this is the patch
-        size that goes into your network. We need this here because we will pad patients in here so that patches at the
-        border of patients are sampled properly
-        :param batch_size:
-        :param num_batches: how many batches will the data loader produce before stopping? None=endless
-        :param seed:
-        :param stage: ignore this (Fabian only)
-        :param transpose: ignore this
-        :param random: sample randomly; CAREFUL! non-random sampling requires batch_size=1, otherwise you will iterate batch_size times over the dataset
-        :param pseudo_3d_slices: 7 = 3 below and 3 above the center slice
-        """
+        
         super(DataLoader2D, self).__init__(data, batch_size, None)
         if pad_kwargs_data is None:
             pad_kwargs_data = OrderedDict()
@@ -577,17 +532,3 @@ class DataLoader2D(SlimDataLoaderBase):
 
         keys = selected_keys
         return {'data': data, 'seg': seg, 'properties': case_properties, "keys": keys}
-
-
-if __name__ == "__main__":
-    t = "Task002_Heart"
-    p = join(preprocessing_output_dir, t, "stage1")
-    dataset = load_dataset(p)
-    with open(join(join(preprocessing_output_dir, t), "plans_stage1.pkl"), 'rb') as f:
-        plans = pickle.load(f)
-    unpack_dataset(p)
-    dl = DataLoader3D(dataset, (32, 32, 32), (32, 32, 32), 2, oversample_foreground_percent=0.33)
-    dl = DataLoader3D(dataset, np.array(plans['patch_size']).astype(int), np.array(plans['patch_size']).astype(int), 2,
-                      oversample_foreground_percent=0.33)
-    dl2d = DataLoader2D(dataset, (64, 64), np.array(plans['patch_size']).astype(int)[1:], 12,
-                        oversample_foreground_percent=0.33)

@@ -101,8 +101,7 @@ def main():
         assert issubclass(trainer_class, (nnUNetTrainerCascadeFullRes, nnUNetTrainerV2CascadeFullRes)), \
             "If running 3d_cascade_fullres then your trainer class must be derived from nnUNetTrainerCascadeFullRes"
     else:
-        assert issubclass(trainer_class,
-                          nnUNetTrainer), "network_trainer was found but is not derived from nnUNetTrainer"
+        assert issubclass(trainer_class, nnUNetTrainer), "network_trainer was found but is not derived from nnUNetTrainer"
 
     trainer = trainer_class(plans_file, fold, local_rank=args.local_rank, output_folder=output_folder_name,
                             dataset_directory=dataset_directory, batch_dice=batch_dice, stage=stage,

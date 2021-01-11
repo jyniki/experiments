@@ -12,18 +12,21 @@ from inference.segmentation_export import save_segmentation_nifti_from_softmax
 from batchgenerators.utilities.file_and_folder_operations import *
 import numpy as np
 from loss_functions.deep_supervision import MultipleOutputLoss2
-from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from training.network_training.nnUNetTrainerV2_DDP import nnUNetTrainerV2_DDP
+from torch.nn.parallel import DistributedDataParallel as DDP
 from utils import to_one_hot
 import shutil
 from torch import nn
 matplotlib.use("agg")
-class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
-    def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
-                 unpack_data=True, deterministic=True, previous_trainer="nnUNetTrainerV2", fp16=False):
-        super().__init__(plans_file, fold, output_folder, dataset_directory,batch_dice, stage, 
-                         unpack_data, deterministic, fp16)
-        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
-                          unpack_data, deterministic, fp16, previous_trainer)
+
+
+class nnUNetTrainerV2CascadeFullRes_DDP(nnUNetTrainerV2_DDP):
+    def __init__(self, plans_file, fold, local_rank, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
+                 unpack_data=True, deterministic=True, previous_trainer="nnUNetTrainerV2_DDP", distribute_batch_size = False, fp16=False):
+        super().__init__(plans_file, fold, local_rank, output_folder, dataset_directory, batch_dice, 
+                         stage, unpack_data, deterministic, distribute_batch_size, fp16)
+        self.init_args = (plans_file, fold, local_rank, output_folder, dataset_directory, batch_dice, 
+                          stage, unpack_data, deterministic, distribute_batch_size, fp16, previous_trainer)
 
         if self.output_folder is not None:
             task = self.output_folder.split("/")[-3]
@@ -39,8 +42,7 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
         super().do_split()
         for k in self.dataset:
             self.dataset[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
-            assert isfile(self.dataset[k]['seg_from_prev_stage_file']), \
-                "seg from prev stage missing: %s" % (self.dataset[k]['seg_from_prev_stage_file'])
+            assert isfile(self.dataset[k]['seg_from_prev_stage_file']), "seg from prev stage missing: %s" % (self.dataset[k]['seg_from_prev_stage_file'])
         for k in self.dataset_val:
             self.dataset_val[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
         for k in self.dataset_tr:
@@ -58,13 +60,11 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
                                   pad_mode="constant", pad_sides=self.pad_all_sides)
         else:
             raise NotImplementedError("2D has no cascade")
-
         return dl_tr, dl_val
 
     def process_plans(self, plans):
         super().process_plans(plans)
-        self.num_input_channels += (self.num_classes - 1)  # for seg from prev stage
-
+        self.num_input_channels += (self.num_classes - 1) 
     def setup_DA_params(self):
         super().setup_DA_params()
         self.data_aug_params["num_cached_per_thread"] = 2
@@ -88,13 +88,16 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
             self.setup_DA_params()
 
             ################# Here we wrap the loss for deep supervision ############
+            # we need to know the number of outputs of the network
             net_numpool = len(self.net_num_pool_op_kernel_sizes)
             weights = np.array([1 / (2 ** i) for i in range(net_numpool)])
             mask = np.array([True if i < net_numpool - 1 else False for i in range(net_numpool)])
             weights[~mask] = 0
             weights = weights / weights.sum()
-            self.ds_loss_weights = weights
-            self.loss = MultipleOutputLoss2(self.loss, self.ds_loss_weights)
+            self.loss_weights = weights
+            # self.loss = MultipleOutputLoss2(self.loss, self.ds_loss_weights)
+            ################# END ###################
+
             self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] + "_stage%d" % self.stage)
 
             if training:
@@ -118,15 +121,17 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
                                                                     self.data_aug_params,
                                                                     deep_supervision_scales=self.deep_supervision_scales,
                                                                     pin_memory=self.pin_memory)
-                self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())), also_print_to_console=False)
-                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())),  also_print_to_console=False)
+                self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())),
+                                       also_print_to_console=False)
+                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())),
+                                       also_print_to_console=False)
             else:
                 pass
 
             self.initialize_network()
             self.initialize_optimizer_and_scheduler()
+            self.network = DDP(self.network, device_ids=[self.local_rank],output_device=self.local_rank)
 
-            assert isinstance(self.network, (SegmentationNetwork, nn.DataParallel))
         else:
             self.print_to_log_file('self.was_initialized is True, not running self.initialize again')
 
@@ -232,10 +237,7 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
                                                          ((softmax_pred, join(output_folder, fname + ".nii.gz"),
                                                            properties, interpolation_order, None, None, None,
                                                            softmax_fname, None, force_separate_z,
-                                                           interpolation_order_z),
-                                                          )
-                                                         )
-                               )
+                                                           interpolation_order_z),)))
 
             pred_gt_tuples.append([join(output_folder, fname + ".nii.gz"),
                                    join(self.gt_niftis_folder, fname + ".nii.gz")])

@@ -11,20 +11,25 @@ from paths import network_training_output_dir
 from inference.segmentation_export import save_segmentation_nifti_from_softmax
 from batchgenerators.utilities.file_and_folder_operations import *
 import numpy as np
-from loss_functions.deep_supervision import MultipleOutputLoss2
-from training.network_training.nnUNetTrainerV2 import nnUNetTrainerV2
+from training.network_training.nnUNetTrainerV2_DP import nnUNetTrainerV2_DP
+from torch.nn.parallel.data_parallel import DataParallel
 from utils import to_one_hot
 import shutil
 from torch import nn
 matplotlib.use("agg")
-class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
-    def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
-                 unpack_data=True, deterministic=True, previous_trainer="nnUNetTrainerV2", fp16=False):
-        super().__init__(plans_file, fold, output_folder, dataset_directory,batch_dice, stage, 
-                         unpack_data, deterministic, fp16)
-        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
-                          unpack_data, deterministic, fp16, previous_trainer)
 
+class nnUNetTrainerV2CascadeFullRes_DP(nnUNetTrainerV2_DP):
+    def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
+                 unpack_data=True, deterministic=True, previous_trainer="nnUNetTrainerV2_DP", num_gpus=1, 
+                 distribute_batch_size=False, fp16=False):
+        super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
+                          unpack_data, deterministic, fp16, num_gpus, distribute_batch_size)
+        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage,
+                          unpack_data, deterministic, fp16, num_gpus, distribute_batch_size, previous_trainer)
+
+        self.num_gpus = num_gpus
+        self.distribute_batch_size = distribute_batch_size
+        
         if self.output_folder is not None:
             task = self.output_folder.split("/")[-3]
             plans_identifier = self.output_folder.split("/")[-2].split("__")[-1]
@@ -80,6 +85,7 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
         self.data_aug_params['all_segmentation_labels'] = list(range(1, self.num_classes))
 
     def initialize(self, training=True, force_load_plans=False):
+
         if not self.was_initialized:
             if force_load_plans or (self.plans is None):
                 self.load_plans_file()
@@ -93,8 +99,9 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
             mask = np.array([True if i < net_numpool - 1 else False for i in range(net_numpool)])
             weights[~mask] = 0
             weights = weights / weights.sum()
-            self.ds_loss_weights = weights
-            self.loss = MultipleOutputLoss2(self.loss, self.ds_loss_weights)
+            self.loss_weights = weights
+            ################# END ###################
+
             self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] + "_stage%d" % self.stage)
 
             if training:
@@ -119,14 +126,14 @@ class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
                                                                     deep_supervision_scales=self.deep_supervision_scales,
                                                                     pin_memory=self.pin_memory)
                 self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())), also_print_to_console=False)
-                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())),  also_print_to_console=False)
+                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())), also_print_to_console=False)
             else:
                 pass
 
             self.initialize_network()
             self.initialize_optimizer_and_scheduler()
 
-            assert isinstance(self.network, (SegmentationNetwork, nn.DataParallel))
+            assert isinstance(self.network, (SegmentationNetwork, DataParallel))
         else:
             self.print_to_log_file('self.was_initialized is True, not running self.initialize again')
 

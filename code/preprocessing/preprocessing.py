@@ -22,24 +22,7 @@ def get_lowres_axis(new_spacing):
 def resample_patient(data, seg, original_spacing, target_spacing, order_data=3, order_seg=0, force_separate_z=False,
                      cval_data=0, cval_seg=-1, order_z_data=0, order_z_seg=0,
                      separate_z_anisotropy_threshold=RESAMPLING_SEPARATE_Z_ANISO_THRESHOLD):
-    """
-    :param cval_seg:
-    :param cval_data:
-    :param data:
-    :param seg:
-    :param original_spacing:
-    :param target_spacing:
-    :param order_data:
-    :param order_seg:
-    :param force_separate_z: if None then we dynamically decide how to resample along z, if True/False then always
-    /never resample along z separately
-    :param order_z_seg: only applies if do_separate_z is True
-    :param order_z_data: only applies if do_separate_z is True
-    :param separate_z_anisotropy_threshold: if max_spacing > separate_z_anisotropy_threshold * min_spacing (per axis)
-    then resample along lowres axis with order_z_data/order_z_seg instead of order_data/order_seg
-
-    :return:
-    """
+    
     assert not ((data is None) and (seg is None))
     if data is not None:
         assert len(data.shape) == 4, "data must be c x y z"
@@ -93,18 +76,7 @@ def resample_patient(data, seg, original_spacing, target_spacing, order_data=3, 
 
 
 def resample_data_or_seg(data, new_shape, is_seg, axis=None, order=3, do_separate_z=False, cval=0, order_z=0):
-    """
-    separate_z=True will resample with order 0 along z
-    :param data:
-    :param new_shape:
-    :param is_seg:
-    :param axis:
-    :param order:
-    :param do_separate_z:
-    :param cval:
-    :param order_z: only applies if do_separate_z is True
-    :return:
-    """
+    
     assert len(data.shape) == 4, "data must be (c, x, y, z)"
     if is_seg:
         resize_fn = resize_segmentation
@@ -186,17 +158,10 @@ def resample_data_or_seg(data, new_shape, is_seg, axis=None, order=3, do_separat
 
 class GenericPreprocessor(object):
     def __init__(self, normalization_scheme_per_modality, use_nonzero_mask, transpose_forward: (tuple, list), intensityproperties=None):
-        """
-
-        :param normalization_scheme_per_modality: dict {0:'nonCT'}
-        :param use_nonzero_mask: {0:False}
-        :param intensityproperties:
-        """
         self.transpose_forward = transpose_forward
         self.intensityproperties = intensityproperties
         self.normalization_scheme_per_modality = normalization_scheme_per_modality
         self.use_nonzero_mask = use_nonzero_mask
-
         self.resample_separate_z_anisotropy_threshold = RESAMPLING_SEPARATE_Z_ANISO_THRESHOLD
 
     @staticmethod
@@ -209,25 +174,13 @@ class GenericPreprocessor(object):
         return data, seg, properties
 
     def resample_and_normalize(self, data, target_spacing, properties, seg=None, force_separate_z=None):
-        """
-        data and seg must already have been transposed by transpose_forward. properties are the un-transposed values
-        (spacing etc)
-        :param data:
-        :param target_spacing:
-        :param properties:
-        :param seg:
-        :param force_separate_z:
-        :return:
-        """
-
         # target_spacing is already transposed, properties["original_spacing"] is not so we need to transpose it!
         # data, seg are already transposed. Double check this using the properties
         original_spacing_transposed = np.array(properties["original_spacing"])[self.transpose_forward]
         before = {
             'spacing': properties["original_spacing"],
             'spacing_transposed': original_spacing_transposed,
-            'data.shape (data is transposed)': data.shape
-        }
+            'data.shape (data is transposed)': data.shape}
 
         # remove nans
         data[np.isnan(data)] = 0
@@ -338,15 +291,6 @@ class GenericPreprocessor(object):
 
     def run(self, target_spacings, input_folder_with_cropped_npz, output_folder, data_identifier,
             num_threads=default_num_threads, force_separate_z=None):
-        """
-
-        :param target_spacings: list of lists [[1.25, 1.25, 5]]
-        :param input_folder_with_cropped_npz: dim: c, x, y, z | npz_file['data'] np.savez_compressed(fname.npz, data=arr)
-        :param output_folder:
-        :param num_threads:
-        :param force_separate_z: None
-        :return:
-        """
         print("Initializing to run preprocessing")
         print("npz folder:", input_folder_with_cropped_npz)
         print("output_folder:", output_folder)
@@ -379,17 +323,6 @@ class GenericPreprocessor(object):
 
 class Preprocessor3DDifferentResampling(GenericPreprocessor):
     def resample_and_normalize(self, data, target_spacing, properties, seg=None, force_separate_z=None):
-        """
-        data and seg must already have been transposed by transpose_forward. properties are the un-transposed values
-        (spacing etc)
-        :param data:
-        :param target_spacing:
-        :param properties:
-        :param seg:
-        :param force_separate_z:
-        :return:
-        """
-
         # target_spacing is already transposed, properties["original_spacing"] is not so we need to transpose it!
         # data, seg are already transposed. Double check this using the properties
         original_spacing_transposed = np.array(properties["original_spacing"])[self.transpose_forward]
@@ -466,16 +399,6 @@ class Preprocessor3DBetterResampling(GenericPreprocessor):
     resampling in z.
     """
     def resample_and_normalize(self, data, target_spacing, properties, seg=None, force_separate_z=False):
-        """
-        data and seg must already have been transposed by transpose_forward. properties are the un-transposed values
-        (spacing etc)
-        :param data:
-        :param target_spacing:
-        :param properties:
-        :param seg:
-        :param force_separate_z:
-        :return:
-        """
         if force_separate_z is not False:
             print("WARNING: Preprocessor3DBetterResampling always uses force_separate_z=False. "
                   "You specified %s. Your choice is overwritten" % str(force_separate_z))

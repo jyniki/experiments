@@ -36,9 +36,6 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
         raise RuntimeError("Could not find trainer class")
 
     if network == "3d_cascade_fullres":
-        # assert issubclass(trainer_class, nnUNetTrainerCascadeFullRes), "If running 3d_cascade_fullres then your " \
-        #                                                                "trainer class must be derived from " \
-        #                                                                "nnUNetTrainerCascadeFullRes"
         assert issubclass(trainer_class, (nnUNetTrainerCascadeFullRes, nnUNetTrainerV2CascadeFullRes)), \
             "If running 3d_cascade_fullres then your trainer class must be derived from nnUNetTrainerCascadeFullRes"
     else:
@@ -48,7 +45,7 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
     trainer = trainer_class(plans_file, fold, output_folder=output_folder_name,
                             dataset_directory=dataset_directory, batch_dice=batch_dice, stage=stage,
                             unpack_data=decompress_data, deterministic=deterministic,
-                            distribute_batch_size=dbs_flag, num_gpus=num_gpus, fp16=not fp32)
+                            distribute_batch_size=dbs_flag, num_gpus=num_gpus, fp16 = not fp32)
 
     if disable_saving:
         trainer.save_latest_only = False  # if false it will not store/overwrite _latest but separate files each
@@ -71,11 +68,13 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
 
     trainer.network.eval()
 
-    # predict validation
-    trainer.validate(save_softmax=npz_flag)
 
+    trainer.data_init()
+    
     if network == '3d_lowres':
         trainer.load_best_checkpoint(False)
         print("predicting segmentations for the next stage of the cascade")
         predict_next_stage(trainer, join(dataset_directory, trainer.plans['data_identifier'] + "_stage%d" % 1))
 
+    # predict validation
+    trainer.validate(save_softmax=npz_flag)
