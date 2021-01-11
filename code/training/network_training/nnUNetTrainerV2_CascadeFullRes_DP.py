@@ -20,21 +20,18 @@ matplotlib.use("agg")
 
 class nnUNetTrainerV2CascadeFullRes_DP(nnUNetTrainerV2_DP):
     def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
-                 unpack_data=True, deterministic=True, previous_trainer="nnUNetTrainerV2_DP", num_gpus=1, 
-                 distribute_batch_size=False, fp16=False):
-        super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
-                          unpack_data, deterministic, fp16, num_gpus, distribute_batch_size)
+                 unpack_data=True, deterministic=True, num_gpus=1, distribute_batch_size=False, fp16=False, previous_trainer="nnUNetTrainerV2"):
+        super(nnUNetTrainerV2CascadeFullRes_DP,self).__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
+                          unpack_data, deterministic, num_gpus, distribute_batch_size, fp16)
         self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage,
                           unpack_data, deterministic, fp16, num_gpus, distribute_batch_size, previous_trainer)
 
         self.num_gpus = num_gpus
         self.distribute_batch_size = distribute_batch_size
-        
         if self.output_folder is not None:
             task = self.output_folder.split("/")[-3]
             plans_identifier = self.output_folder.split("/")[-2].split("__")[-1]
-
-            folder_with_segs_prev_stage = join(network_training_output_dir, "3d_lowres", task, previous_trainer + "__" + plans_identifier, "pred_next_stage")
+            folder_with_segs_prev_stage = join(network_training_output_dir, "3d_lowres",task , previous_trainer+ "__" + plans_identifier, "pred_next_stage")
             self.folder_with_segs_from_prev_stage = folder_with_segs_prev_stage
         else:
             self.folder_with_segs_from_prev_stage = None

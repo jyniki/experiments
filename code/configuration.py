@@ -17,6 +17,8 @@ if config['tf']:
 else:
     tf = default_num_threads
     
-    
+default_trainer=  config['default_trainer']         
+default_cascade_trainer = config['default_cascade_trainer']  
+  
 # determines what threshold to use for resampling the low resolution axis separately (with NN)
 RESAMPLING_SEPARATE_Z_ANISO_THRESHOLD = 3  
