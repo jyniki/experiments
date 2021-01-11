@@ -88,7 +88,7 @@ def predict_simple(input_folder, output_folder, task_id,
         trainer = trainer_class_name
     
     if using_pretrain:
-        model_folder_name = join(pre_training_output_dir, "3d_lowres", task_name, trainer_class_name + "__" + plans_identifier)
+        model_folder_name = join(pre_training_output_dir, model, task_name, trainer + "__" + plans_identifier)
     else:
         model_folder_name = join(network_training_output_dir, model, task_name, trainer + "__" + plans_identifier)
     print("using model stored in ", model_folder_name)
@@ -100,6 +100,7 @@ def predict_simple(input_folder, output_folder, task_id,
                         mixed_precision=not disable_mixed_precision,
                         step_size=step_size, checkpoint_name="model_final_checkpoint")
 
+    # TODO
     if eval_flag:
         task = output_folder.split('/')[-1]
         gt_folder = join(preprocessing_output_dir,task,"gt_segmentations")

@@ -203,8 +203,6 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
 
     print("inference done. Now waiting for the segmentation export to finish...")
     _ = [i.get() for i in results]
-    # now apply postprocessing
-    # first load the postprocessing properties if they are present. Else raise a well visible warning
     results = []
     pp_file = join(model, "postprocessing.json")
     if isfile(pp_file):
