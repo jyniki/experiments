@@ -34,10 +34,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
         - replaced get_default_augmentation with get_moreDA_augmentation
         - enforce to only run this code once
         - loss function wrapper for deep supervision
-
-        :param training:
-        :param force_load_plans:
-        :return:
         """
         if not self.was_initialized:
             maybe_mkdir_p(self.output_folder)
@@ -99,10 +95,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
         - SGD instead of Adam
         - self.lr_scheduler = None because we do poly_lr
         - deep supervision = True
-        - i am sure I forgot something here
-
-        Known issue: forgot to set neg_slope=0 in InitWeights_He; should not make a difference though
-        :return:
         """
         if self.threeD:
             conv_op = nn.Conv3d
