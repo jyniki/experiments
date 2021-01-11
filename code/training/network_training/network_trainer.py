@@ -22,13 +22,11 @@ from abc import abstractmethod
 from datetime import datetime
 from tqdm import trange
 from utils import maybe_to_torch, to_cuda
-import yaml   
+from configuration import MAX_EPOCH
 
-# TODO:
 # write a interface to NetworkTrainer
 class NetworkTrainer(object):
     def __init__(self, deterministic=True, fp16=False):
-        config = yaml.load(open('./configs/network_trainer.yaml', 'r'), Loader=yaml.FullLoader)
         
         self.fp16 = fp16
         self.amp_grad_scaler = None
@@ -68,7 +66,7 @@ class NetworkTrainer(object):
         # too high the training will take forever
         self.train_loss_MA_alpha = 0.93  # alpha * old + (1-alpha) * new
         self.train_loss_MA_eps = 5e-4  # new MA must be at least this much better (smaller)
-        self.max_num_epochs = config['max_num_epochs']
+        self.max_num_epochs = MAX_EPOCH
         self.num_batches_per_epoch = 250
         self.num_val_batches_per_epoch = 50
         self.also_val_in_tr_mode = False
@@ -88,7 +86,7 @@ class NetworkTrainer(object):
         self.log_file = None
         self.deterministic = deterministic
 
-        self.use_progress_bar = False
+        self.use_progress_bar = True #False
         if 'nnunet_use_progress_bar' in os.environ.keys():
             self.use_progress_bar = bool(int(os.environ['nnunet_use_progress_bar']))
 
