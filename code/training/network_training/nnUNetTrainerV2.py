@@ -42,7 +42,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
                 self.load_plans_file()
 
             self.process_plans(self.plans)
-
             self.setup_DA_params()
 
             ################# Here we wrap the loss for deep supervision ############
@@ -74,10 +73,8 @@ class nnUNetTrainerV2(nnUNetTrainer):
                                                                     self.data_aug_params,
                                                                     deep_supervision_scales=self.deep_supervision_scales,
                                                                     pin_memory=self.pin_memory)
-                self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())),
-                                       also_print_to_console=False)
-                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())),
-                                       also_print_to_console=False)
+                self.print_to_log_file("TRAINING KEYS:\n %s" % (str(self.dataset_tr.keys())), also_print_to_console=False)
+                self.print_to_log_file("VALIDATION KEYS:\n %s" % (str(self.dataset_val.keys())), also_print_to_console=False)
             else:
                 pass
 

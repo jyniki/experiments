@@ -82,7 +82,6 @@ class nnUNetTrainerV2CascadeFullRes_DP(nnUNetTrainerV2_DP):
         self.data_aug_params['all_segmentation_labels'] = list(range(1, self.num_classes))
 
     def initialize(self, training=True, force_load_plans=False):
-
         if not self.was_initialized:
             if force_load_plans or (self.plans is None):
                 self.load_plans_file()
