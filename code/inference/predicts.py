@@ -60,6 +60,8 @@ def predict_simple(input_folder, output_folder, gt_folder ,task_id, default_trai
     elif all_in_gpu == "False":
         all_in_gpu = False
 
+    
+        
     if model == "3d_cascade_fullres" and lowres_segmentations is None:
         print("lowres_segmentations is None. Attempting to predict 3d_lowres first...")
         assert part_id == 0 and num_parts == 1, "if you don't specify a --lowres_segmentations folder for the " \
@@ -84,8 +86,13 @@ def predict_simple(input_folder, output_folder, gt_folder ,task_id, default_trai
 
     if model == "3d_cascade_fullres":
         trainer = cascade_trainer_class_name
+    
     else:
+        if model == "2d":
+            assert mode == "normal", "please set mode = normal for 2D predict"
+            
         trainer = trainer_class_name
+        
     
     if using_pretrain:
         model_folder_name = join(pre_training_output_dir, model, task_name, trainer + "__" + plans_identifier)

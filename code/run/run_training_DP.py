@@ -77,6 +77,5 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
         predict_next_stage(trainer, join(dataset_directory, trainer.plans['data_identifier'] + "_stage%d" % 1))
 
     # predict validation
-    
-    # TAGS:
-    # trainer.validate(save_softmax=npz_flag)
+
+    trainer.validate(save_softmax=npz_flag)
