@@ -200,6 +200,7 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
         results.append(pool.starmap_async(save_segmentation_nifti_from_softmax,
                                           ((softmax_mean, output_filename, dct, interpolation_order, region_class_order,
                                             None, None,npz_file, None, force_separate_z, interpolation_order_z),)))
+        
 
     print("inference done. Now waiting for the segmentation export to finish...")
     _ = [i.get() for i in results]
@@ -225,8 +226,7 @@ def predict_cases(model, list_of_lists, output_filenames, folds, save_npz, num_t
 
 def predict_cases_fast(model, list_of_lists, output_filenames, folds, num_threads_preprocessing,
                        num_threads_nifti_save, segs_from_prev_stage=None, do_tta=True, mixed_precision=True,
-                       overwrite_existing=False,
-                       all_in_gpu=False, step_size=0.5, checkpoint_name="model_final_checkpoint",
+                       overwrite_existing=False, all_in_gpu=False, step_size=0.5, checkpoint_name="model_final_checkpoint",
                        segmentation_export_kwargs: dict = None):
     assert len(list_of_lists) == len(output_filenames)
     if segs_from_prev_stage is not None: assert len(segs_from_prev_stage) == len(output_filenames)
@@ -331,8 +331,7 @@ def predict_cases_fast(model, list_of_lists, output_filenames, folds, num_thread
         print("initializing segmentation export")
         results.append(pool.starmap_async(save_segmentation_nifti,
                                           ((seg, output_filename, dct, interpolation_order, force_separate_z,
-                                            interpolation_order_z),)
-                                          ))
+                                            interpolation_order_z),)))
         print("done")
 
     print("inference done. Now waiting for the segmentation export to finish...")
@@ -446,9 +445,7 @@ def predict_cases_fastest(model, list_of_lists, output_filenames, folds, num_thr
             seg = seg.transpose([i for i in transpose_backward])
 
         print("initializing segmentation export")
-        results.append(pool.starmap_async(save_segmentation_nifti,
-                                          ((seg, output_filename, dct, 0, None),)
-                                          ))
+        results.append(pool.starmap_async(save_segmentation_nifti,((seg, output_filename, dct, 0, None),)))
         print("done")
 
     print("inference done. Now waiting for the segmentation export to finish...")
@@ -463,9 +460,7 @@ def predict_cases_fastest(model, list_of_lists, output_filenames, folds, num_thr
         # for_which_classes stores for which of the classes everything but the largest connected component needs to be
         # removed
         for_which_classes, min_valid_obj_size = load_postprocessing(pp_file)
-        results.append(pool.starmap_async(load_remove_save,
-                                          zip(output_filenames, output_filenames,
-                                              [for_which_classes] * len(output_filenames),
+        results.append(pool.starmap_async(load_remove_save,zip(output_filenames, output_filenames,[for_which_classes] * len(output_filenames),
                                               [min_valid_obj_size] * len(output_filenames))))
         _ = [i.get() for i in results]
     else:
