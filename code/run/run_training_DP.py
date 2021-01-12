@@ -10,6 +10,8 @@ from training.cascade_stuff.predict_next_stage import predict_next_stage
 from training.network_training.nnUNetTrainer import nnUNetTrainer
 from training.network_training.nnUNetTrainerCascadeFullRes import nnUNetTrainerCascadeFullRes
 from training.network_training.nnUNetTrainerV2_CascadeFullRes import nnUNetTrainerV2CascadeFullRes
+from training.network_training.nnUNetTrainerV2_CascadeFullRes_DP import nnUNetTrainerV2CascadeFullRes_DP
+
 from utils import convert_id_to_task_name
 
 def train(network, network_trainer, task, fold, disable_saving, npz_flag, validation_only, continue_training, num_gpus, dbs_flag):
@@ -36,7 +38,7 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
         raise RuntimeError("Could not find trainer class")
 
     if network == "3d_cascade_fullres":
-        assert issubclass(trainer_class, (nnUNetTrainerCascadeFullRes, nnUNetTrainerV2CascadeFullRes)), \
+        assert issubclass(trainer_class, (nnUNetTrainerCascadeFullRes, nnUNetTrainerV2CascadeFullRes, nnUNetTrainerV2CascadeFullRes_DP)), \
             "If running 3d_cascade_fullres then your trainer class must be derived from nnUNetTrainerCascadeFullRes"
     else:
         assert issubclass(trainer_class, nnUNetTrainer), "network_trainer was found but is not derived from nnUNetTrainer"
@@ -77,6 +79,5 @@ def train(network, network_trainer, task, fold, disable_saving, npz_flag, valida
         predict_next_stage(trainer, join(dataset_directory, trainer.plans['data_identifier'] + "_stage%d" % 1))
 
     # predict validation
-    
-    # TAGS:
-    # trainer.validate(save_softmax=npz_flag)
+
+    trainer.validate(save_softmax=npz_flag)
