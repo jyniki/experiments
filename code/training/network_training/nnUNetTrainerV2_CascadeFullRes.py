@@ -19,11 +19,12 @@ from torch import nn
 matplotlib.use("agg")
 class nnUNetTrainerV2CascadeFullRes(nnUNetTrainerV2):
     def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
-                 unpack_data=True, deterministic=True, previous_trainer="nnUNetTrainerV2", fp16=False):
+                 unpack_data=True, deterministic=True, fp16=False, previous_trainer="nnUNetTrainerV2"):
+    
         super().__init__(plans_file, fold, output_folder, dataset_directory,batch_dice, stage, 
                          unpack_data, deterministic, fp16)
-        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
-                          unpack_data, deterministic, fp16, previous_trainer)
+        self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
+                          deterministic,fp16, previous_trainer)
 
         if self.output_folder is not None:
             task = self.output_folder.split("/")[-3]

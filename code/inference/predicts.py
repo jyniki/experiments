@@ -59,8 +59,6 @@ def predict_simple(input_folder, output_folder, gt_folder ,task_id, default_trai
         all_in_gpu = True
     elif all_in_gpu == "False":
         all_in_gpu = False
-
-    
         
     if model == "3d_cascade_fullres" and lowres_segmentations is None:
         print("lowres_segmentations is None. Attempting to predict 3d_lowres first...")
@@ -68,18 +66,25 @@ def predict_simple(input_folder, output_folder, gt_folder ,task_id, default_trai
                                                 "inference of the cascade, custom values for part_id and num_parts " \
                                                 "are not supported. If you wish to have multiple parts, please " \
                                                 "run the 3d_lowres inference first (separately)"
+        lowres_output_folder = join(output_folder, "3d_lowres_predictions")
         if using_pretrain:
             model_folder_name = join(pre_training_output_dir, "3d_lowres", task_name, trainer_class_name + "__" + plans_identifier)
+            predict_from_folder(model_folder_name, input_folder, lowres_output_folder, folds, False,
+                    num_threads_preprocessing, num_threads_nifti_save, None, part_id, num_parts, not disable_tta,
+                    overwrite_existing=overwrite_existing, mode=mode, overwrite_all_in_gpu=all_in_gpu,
+                    mixed_precision=not disable_mixed_precision,
+                    step_size=step_size, checkpoint_name="model_final_checkpoint")
         else:
             model_folder_name = join(network_training_output_dir, "3d_lowres", task_name, trainer_class_name + "__" + plans_identifier)
+            predict_from_folder(model_folder_name, input_folder, lowres_output_folder, folds, False,
+                    num_threads_preprocessing, num_threads_nifti_save, None, part_id, num_parts, not disable_tta,
+                    overwrite_existing=overwrite_existing, mode=mode, overwrite_all_in_gpu=all_in_gpu,
+                    mixed_precision=not disable_mixed_precision,
+                    step_size=step_size, checkpoint_name ="model_best")
+            
         assert isdir(model_folder_name), "model output folder not found. Expected: %s" % model_folder_name
-        lowres_output_folder = join(output_folder, "3d_lowres_predictions")
         
-        predict_from_folder(model_folder_name, input_folder, lowres_output_folder, folds, False,
-                            num_threads_preprocessing, num_threads_nifti_save, None, part_id, num_parts, not disable_tta,
-                            overwrite_existing=overwrite_existing, mode=mode, overwrite_all_in_gpu=all_in_gpu,
-                            mixed_precision=not disable_mixed_precision,
-                            step_size=step_size)
+
         lowres_segmentations = lowres_output_folder
         torch.cuda.empty_cache()
         print("3d_lowres done")
@@ -93,19 +98,23 @@ def predict_simple(input_folder, output_folder, gt_folder ,task_id, default_trai
             
         trainer = trainer_class_name
         
-    
     if using_pretrain:
         model_folder_name = join(pre_training_output_dir, model, task_name, trainer + "__" + plans_identifier)
+        predict_from_folder(model_folder_name, input_folder, output_folder, folds, save_npz, num_threads_preprocessing,
+                            num_threads_nifti_save, lowres_segmentations, part_id, num_parts, not disable_tta,
+                            overwrite_existing=overwrite_existing, mode=mode, overwrite_all_in_gpu=all_in_gpu,
+                            mixed_precision=not disable_mixed_precision,
+                            step_size=step_size, checkpoint_name="model_final_checkpoint")
     else:
         model_folder_name = join(network_training_output_dir, model, task_name, trainer + "__" + plans_identifier)
-    print("using model stored in ", model_folder_name)
-    assert isdir(model_folder_name), "model output folder not found. Expected: %s" % model_folder_name
+        predict_from_folder(model_folder_name, input_folder, output_folder, folds, save_npz, num_threads_preprocessing,
+                            num_threads_nifti_save, lowres_segmentations, part_id, num_parts, not disable_tta,
+                            overwrite_existing=overwrite_existing, mode=mode, overwrite_all_in_gpu=all_in_gpu,
+                            mixed_precision=not disable_mixed_precision,
+                            step_size=step_size, checkpoint_name="model_best")
 
-    predict_from_folder(model_folder_name, input_folder, output_folder, folds, save_npz, num_threads_preprocessing,
-                        num_threads_nifti_save, lowres_segmentations, part_id, num_parts, not disable_tta,
-                        overwrite_existing=overwrite_existing, mode=mode, overwrite_all_in_gpu=all_in_gpu,
-                        mixed_precision=not disable_mixed_precision,
-                        step_size=step_size, checkpoint_name="model_final_checkpoint")
+        print("using model stored in ", model_folder_name)
+        assert isdir(model_folder_name), "model output folder not found. Expected: %s" % model_folder_name
 
     if eval_flag:
         # task = output_folder.split('/')[-1]
