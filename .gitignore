@@ -5,3 +5,4 @@ experiments.udb
 /DATASET/
 /.vscode/
 **/configs/
+*.yaml
