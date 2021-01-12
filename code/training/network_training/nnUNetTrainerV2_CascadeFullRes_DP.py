@@ -33,6 +33,7 @@ class nnUNetTrainerV2CascadeFullRes_DP(nnUNetTrainerV2CascadeFullRes):
         self.num_gpus = num_gpus
         self.distribute_batch_size = distribute_batch_size
         self.dice_do_BG = False
+        self.dice_smooth = 1e-5
         if self.output_folder is not None:
             task = self.output_folder.split("/")[-3]
             plans_identifier = self.output_folder.split("/")[-2].split("__")[-1]
