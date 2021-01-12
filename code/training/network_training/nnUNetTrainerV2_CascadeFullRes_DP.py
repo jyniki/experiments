@@ -1,30 +1,34 @@
 from multiprocessing.pool import Pool
 from time import sleep
 import matplotlib
-from configuration import default_num_threads
+from network_architecture.generic_UNet_DP import Generic_UNet_DP
 from preprocessing.connected_components import determine_postprocessing
 from training.data_augmentation.default_data_augmentation import get_moreDA_augmentation
 from training.dataloading.dataset_loading import DataLoader3D, unpack_dataset
 from evaluation.evaluator import aggregate_scores
 from network_architecture.neural_network import SegmentationNetwork
+from network_architecture.initialization import InitWeights_He
 from paths import network_training_output_dir
 from inference.segmentation_export import save_segmentation_nifti_from_softmax
 from batchgenerators.utilities.file_and_folder_operations import *
 import numpy as np
-from training.network_training.nnUNetTrainerV2_DP import nnUNetTrainerV2_DP
+from training.network_training.nnUNetTrainer import nnUNetTrainer
+from training.network_training.nnUNetTrainerV2_CascadeFullRes import nnUNetTrainerV2CascadeFullRes
 from torch.nn.parallel.data_parallel import DataParallel
-from utils import to_one_hot
-import shutil
+from utils import to_cuda, maybe_to_torch,softmax_helper
 from torch import nn
+import torch
+from torch.cuda.amp import autocast
+from torch.nn.utils import clip_grad_norm_
 matplotlib.use("agg")
 
-class nnUNetTrainerV2CascadeFullRes_DP(nnUNetTrainerV2_DP):
+class nnUNetTrainerV2CascadeFullRes_DP(nnUNetTrainerV2CascadeFullRes):
     def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
-                 unpack_data=True, deterministic=True, num_gpus=1, distribute_batch_size=False, fp16=False, previous_trainer="nnUNetTrainerV2"):
-        super(nnUNetTrainerV2CascadeFullRes_DP,self).__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
-                          unpack_data, deterministic, num_gpus, distribute_batch_size, fp16)
+                 unpack_data=True, deterministic=True, num_gpus=1, distribute_batch_size=False, fp16=False, previous_trainer="nnUNetTrainerV2_DP"):
+        super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
+                          unpack_data, deterministic, previous_trainer, fp16)
         self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage,
-                          unpack_data, deterministic, fp16, num_gpus, distribute_batch_size, previous_trainer)
+                          unpack_data, deterministic, num_gpus, distribute_batch_size, fp16, previous_trainer)
 
         self.num_gpus = num_gpus
         self.distribute_batch_size = distribute_batch_size
@@ -36,17 +40,6 @@ class nnUNetTrainerV2CascadeFullRes_DP(nnUNetTrainerV2_DP):
         else:
             self.folder_with_segs_from_prev_stage = None
         print(self.folder_with_segs_from_prev_stage)
-
-    def do_split(self):
-        super().do_split()
-        for k in self.dataset:
-            self.dataset[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
-            assert isfile(self.dataset[k]['seg_from_prev_stage_file']), \
-                "seg from prev stage missing: %s" % (self.dataset[k]['seg_from_prev_stage_file'])
-        for k in self.dataset_val:
-            self.dataset_val[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
-        for k in self.dataset_tr:
-            self.dataset_tr[k]['seg_from_prev_stage_file'] = join(self.folder_with_segs_from_prev_stage, k + "_segFromPrevStage.npz")
 
     def get_basic_generators(self):
         self.load_dataset()
@@ -65,21 +58,13 @@ class nnUNetTrainerV2CascadeFullRes_DP(nnUNetTrainerV2_DP):
 
     def process_plans(self, plans):
         super().process_plans(plans)
-        self.num_input_channels += (self.num_classes - 1)  # for seg from prev stage
-
-    def setup_DA_params(self):
-        super().setup_DA_params()
-        self.data_aug_params["num_cached_per_thread"] = 2
-        self.data_aug_params['move_last_seg_chanel_to_data'] = True
-        self.data_aug_params['cascade_do_cascade_augmentations'] = True
-        self.data_aug_params['cascade_random_binary_transform_p'] = 0.4
-        self.data_aug_params['cascade_random_binary_transform_p_per_label'] = 1
-        self.data_aug_params['cascade_random_binary_transform_size'] = (1, 8)
-        self.data_aug_params['cascade_remove_conn_comp_p'] = 0.2
-        self.data_aug_params['cascade_remove_conn_comp_max_size_percent_threshold'] = 0.15
-        self.data_aug_params['cascade_remove_conn_comp_fill_with_other_class_p'] = 0.0
-        self.data_aug_params['selected_seg_channels'] = [0, 1]
-        self.data_aug_params['all_segmentation_labels'] = list(range(1, self.num_classes))
+        if not self.distribute_batch_size:
+            self.batch_size = self.num_gpus * self.plans['plans_per_stage'][self.stage]['batch_size']
+        else:
+            if self.batch_size < self.num_gpus:
+                print("WARNING: self.batch_size < self.num_gpus. Will not be able to use the GPUs well")
+            elif self.batch_size % self.num_gpus != 0:
+                print("WARNING: self.batch_size % self.num_gpus != 0. Will not be able to use the GPUs well")
 
     def initialize(self, training=True, force_load_plans=False):
         if not self.was_initialized:
@@ -135,148 +120,128 @@ class nnUNetTrainerV2CascadeFullRes_DP(nnUNetTrainerV2_DP):
 
         self.was_initialized = True
 
-    def validate(self, do_mirroring: bool = True, use_sliding_window: bool = True, step_size: float = 0.5,
-                 save_softmax: bool = True, use_gaussian: bool = True, overwrite: bool = True,
-                 validation_folder_name: str = 'validation_raw', debug: bool = False, all_in_gpu: bool = False,
-                 segmentation_export_kwargs: dict = None):
-        assert self.was_initialized, "must initialize, ideally with checkpoint (or train first)"
+    def initialize_network(self):
+        """
+        replace genericUNet with the implementation of above for super speeds
+        """
+        if self.threeD:
+            conv_op = nn.Conv3d
+            dropout_op = nn.Dropout3d
+            norm_op = nn.InstanceNorm3d
 
-        current_mode = self.network.training
-        self.network.eval()
-        # save whether network is in deep supervision mode or not
+        else:
+            conv_op = nn.Conv2d
+            dropout_op = nn.Dropout2d
+            norm_op = nn.InstanceNorm2d
+
+        norm_op_kwargs = {'eps': 1e-5, 'affine': True}
+        dropout_op_kwargs = {'p': 0, 'inplace': True}
+        net_nonlin = nn.LeakyReLU
+        net_nonlin_kwargs = {'negative_slope': 1e-2, 'inplace': True}
+        self.network = Generic_UNet_DP(self.num_input_channels, self.base_num_features, self.num_classes,
+                                    len(self.net_num_pool_op_kernel_sizes),
+                                    self.conv_per_stage, 2, conv_op, norm_op, norm_op_kwargs, dropout_op, dropout_op_kwargs,
+                                    net_nonlin, net_nonlin_kwargs, True, False, InitWeights_He(1e-2),
+                                    self.net_num_pool_op_kernel_sizes, self.net_conv_kernel_sizes, False, True, True)
+        if torch.cuda.is_available():
+            self.network.cuda()
+        self.network.inference_apply_nonlin = softmax_helper
+
+    def run_training(self):
+        self.maybe_update_lr(self.epoch)
+        # amp must be initialized before DP
         ds = self.network.do_ds
-        # disable deep supervision
-        self.network.do_ds = False
-
-        if segmentation_export_kwargs is None:
-            if 'segmentation_export_params' in self.plans.keys():
-                force_separate_z = self.plans['segmentation_export_params']['force_separate_z']
-                interpolation_order = self.plans['segmentation_export_params']['interpolation_order']
-                interpolation_order_z = self.plans['segmentation_export_params']['interpolation_order_z']
-            else:
-                force_separate_z = None
-                interpolation_order = 1
-                interpolation_order_z = 0
-        else:
-            force_separate_z = segmentation_export_kwargs['force_separate_z']
-            interpolation_order = segmentation_export_kwargs['interpolation_order']
-            interpolation_order_z = segmentation_export_kwargs['interpolation_order_z']
-
-        if self.dataset_val is None:
-            self.load_dataset()
-            self.do_split()
-
-        output_folder = join(self.output_folder, validation_folder_name)
-        maybe_mkdir_p(output_folder)
-        # this is for debug purposes
-        my_input_args = {'do_mirroring': do_mirroring,
-                         'use_sliding_window': use_sliding_window,
-                         'step': step_size,
-                         'save_softmax': save_softmax,
-                         'use_gaussian': use_gaussian,
-                         'overwrite': overwrite,
-                         'validation_folder_name': validation_folder_name,
-                         'debug': debug,
-                         'all_in_gpu': all_in_gpu,
-                         'segmentation_export_kwargs': segmentation_export_kwargs,
-                         }
-        save_json(my_input_args, join(output_folder, "validation_args.json"))
-
-        if do_mirroring:
-            if not self.data_aug_params['do_mirror']:
-                raise RuntimeError("We did not train with mirroring so you cannot do inference with mirroring enabled")
-            mirror_axes = self.data_aug_params['mirror_axes']
-        else:
-            mirror_axes = ()
-
-        pred_gt_tuples = []
-
-        export_pool = Pool(default_num_threads)
-        results = []
-
-        for k in self.dataset_val.keys():
-            properties = load_pickle(self.dataset[k]['properties_file'])
-            fname = properties['list_of_data_files'][0].split("/")[-1][:-12]
-
-            if overwrite or (not isfile(join(output_folder, fname + ".nii.gz"))) or \
-                    (save_softmax and not isfile(join(output_folder, fname + ".npz"))):
-                data = np.load(self.dataset[k]['data_file'])['data']
-
-                # concat segmentation of previous step
-                seg_from_prev_stage = np.load(join(self.folder_with_segs_from_prev_stage,
-                                                   k + "_segFromPrevStage.npz"))['data'][None]
-
-                print(k, data.shape)
-                data[-1][data[-1] == -1] = 0
-
-                data_for_net = np.concatenate((data[:-1], to_one_hot(seg_from_prev_stage[0], range(1, self.num_classes))))
-
-                softmax_pred = self.predict_preprocessed_data_return_seg_and_softmax(data_for_net,
-                                                                                     do_mirroring=do_mirroring,
-                                                                                     mirror_axes=mirror_axes,
-                                                                                     use_sliding_window=use_sliding_window,
-                                                                                     step_size=step_size,
-                                                                                     use_gaussian=use_gaussian,
-                                                                                     all_in_gpu=all_in_gpu,
-                                                                                     mixed_precision=self.fp16)[1]
-
-                softmax_pred = softmax_pred.transpose([0] + [i + 1 for i in self.transpose_backward])
-
-                if save_softmax:
-                    softmax_fname = join(output_folder, fname + ".npz")
-                else:
-                    softmax_fname = None
-
-                if np.prod(softmax_pred.shape) > (2e9 / 4 * 0.85):  # *0.85 just to be save
-                    np.save(join(output_folder, fname + ".npy"), softmax_pred)
-                    softmax_pred = join(output_folder, fname + ".npy")
-
-                results.append(export_pool.starmap_async(save_segmentation_nifti_from_softmax,
-                                                         ((softmax_pred, join(output_folder, fname + ".nii.gz"),
-                                                           properties, interpolation_order, None, None, None,
-                                                           softmax_fname, None, force_separate_z,
-                                                           interpolation_order_z),
-                                                          )
-                                                         )
-                               )
-
-            pred_gt_tuples.append([join(output_folder, fname + ".nii.gz"),
-                                   join(self.gt_niftis_folder, fname + ".nii.gz")])
-
-        _ = [i.get() for i in results]
-        self.print_to_log_file("finished prediction")
-
-        # evaluate raw predictions
-        self.print_to_log_file("evaluation of raw predictions")
-        task = self.dataset_directory.split("/")[-1]
-        job_name = self.experiment_name
-        _ = aggregate_scores(pred_gt_tuples, labels=list(range(self.num_classes)),
-                             json_output_file=join(output_folder, "summary.json"),
-                             json_name=job_name + " val tiled %s" % (str(use_sliding_window)),
-                             json_task=task, num_threads=default_num_threads)
-
-        self.print_to_log_file("determining postprocessing")
-        determine_postprocessing(self.output_folder, self.gt_niftis_folder, validation_folder_name,
-                                 final_subf_name=validation_folder_name + "_postprocessed", debug=debug)
-
-        gt_nifti_folder = join(self.output_folder_base, "gt_niftis")
-        maybe_mkdir_p(gt_nifti_folder)
-        for f in subfiles(self.gt_niftis_folder, suffix=".nii.gz"):
-            success = False
-            attempts = 0
-            e = None
-            while not success and attempts < 10:
-                try:
-                    shutil.copy(f, gt_nifti_folder)
-                    success = True
-                except OSError as e:
-                    attempts += 1
-                    sleep(1)
-            if not success:
-                print("Could not copy gt nifti file %s into folder %s" % (f, gt_nifti_folder))
-                if e is not None:
-                    raise e
-
-        # restore network deep supervision mode
-        self.network.train(current_mode)
+        self.network.do_ds = True
+        # self.network = DataParallel(self.network, tuple(range(self.num_gpus)), )
+        self.network = DataParallel(self.network, device_ids = list(range(0, self.num_gpus)))
+        
+        ret = nnUNetTrainer.run_training(self)
+        self.network = self.network.module
         self.network.do_ds = ds
+        return ret
+
+    def run_iteration(self, data_generator, do_backprop=True, run_online_evaluation=False):
+        data_dict = next(data_generator)
+        data = data_dict['data']
+        target = data_dict['target']
+
+        data = maybe_to_torch(data)
+        target = maybe_to_torch(target)
+
+        if torch.cuda.is_available():
+            data = to_cuda(data)
+            target = to_cuda(target)
+
+        self.optimizer.zero_grad()
+
+        if self.fp16:
+            with autocast():
+                ret = self.network(data, target, return_hard_tp_fp_fn=run_online_evaluation)
+                if run_online_evaluation:
+                    ces, tps, fps, fns, tp_hard, fp_hard, fn_hard = ret
+                    self.run_online_evaluation(tp_hard, fp_hard, fn_hard)
+                else:
+                    ces, tps, fps, fns = ret
+                del data, target
+                l = self.compute_loss(ces, tps, fps, fns)
+
+            if do_backprop:
+                self.amp_grad_scaler.scale(l).backward()
+                self.amp_grad_scaler.unscale_(self.optimizer)
+                clip_grad_norm_(self.network.parameters(), 12)
+                self.amp_grad_scaler.step(self.optimizer)
+                self.amp_grad_scaler.update()
+        else:
+            ret = self.network(data, target, return_hard_tp_fp_fn=run_online_evaluation)
+            if run_online_evaluation:
+                ces, tps, fps, fns, tp_hard, fp_hard, fn_hard = ret
+                self.run_online_evaluation(tp_hard, fp_hard, fn_hard)
+            else:
+                ces, tps, fps, fns = ret
+            del data, target
+            l = self.compute_loss(ces, tps, fps, fns)
+
+            if do_backprop:
+                l.backward()
+                clip_grad_norm_(self.network.parameters(), 12)
+                self.optimizer.step()
+
+        return l.detach().cpu().numpy()
+
+    def run_online_evaluation(self, tp_hard, fp_hard, fn_hard):
+        tp_hard = tp_hard.detach().cpu().numpy().mean(0)
+        fp_hard = fp_hard.detach().cpu().numpy().mean(0)
+        fn_hard = fn_hard.detach().cpu().numpy().mean(0)
+        self.online_eval_foreground_dc.append(list((2 * tp_hard) / (2 * tp_hard + fp_hard + fn_hard + 1e-8)))
+        self.online_eval_tp.append(list(tp_hard))
+        self.online_eval_fp.append(list(fp_hard))
+        self.online_eval_fn.append(list(fn_hard))
+
+    def compute_loss(self, ces, tps, fps, fns):
+        loss = None
+        for i in range(len(ces)):
+            if not self.dice_do_BG:
+                tp = tps[i][:, 1:]
+                fp = fps[i][:, 1:]
+                fn = fns[i][:, 1:]
+            else:
+                tp = tps[i]
+                fp = fps[i]
+                fn = fns[i]
+
+            if self.batch_dice:
+                tp = tp.sum(0)
+                fp = fp.sum(0)
+                fn = fn.sum(0)
+            else:
+                pass
+
+            nominator = 2 * tp + self.dice_smooth
+            denominator = 2 * tp + fp + fn + self.dice_smooth
+
+            dice_loss = (- nominator / denominator).mean()
+            if loss is None:
+                loss = self.loss_weights[i] * (ces[i].mean() + dice_loss)
+            else:
+                loss += self.loss_weights[i] * (ces[i].mean() + dice_loss)
+        return loss
