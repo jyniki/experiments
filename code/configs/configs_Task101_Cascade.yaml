@@ -8,12 +8,12 @@
 #   no_pp: False
 #   verify_integrity: False
 
-train_module: dp  # single ,dp, ddp
+train_module: single  # single ,dp, ddp
 
 training_args:
   network: 3d_cascade_fullres  # 2d, 3d_fullres, 3d_lowres, 3d_cascade_fullres
   task_id: 101
-  fold: 1
+  fold: 0
   validation_only: False
   continue_training: False
   npz: False
