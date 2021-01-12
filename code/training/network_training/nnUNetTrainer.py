@@ -22,7 +22,6 @@ from utils import softmax_helper, sum_tensor, recursive_find_python_class
 from torch import nn
 from torch.optim import lr_scheduler
 
-
 matplotlib.use("agg")
 class nnUNetTrainer(NetworkTrainer):
     def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
@@ -177,13 +176,6 @@ class nnUNetTrainer(NetworkTrainer):
         self.was_initialized = True
 
     def initialize_network(self):
-        """
-        This is specific to the U-Net and must be adapted for other network architectures
-        :return:
-        """
-        # self.print_to_log_file(self.net_num_pool_op_kernel_sizes)
-        # self.print_to_log_file(self.net_conv_kernel_sizes)
-
         net_numpool = len(self.net_num_pool_op_kernel_sizes)
 
         if self.threeD:
@@ -205,7 +197,6 @@ class nnUNetTrainer(NetworkTrainer):
                                     net_nonlin, net_nonlin_kwargs, False, False, lambda x: x, InitWeights_He(1e-2),
                                     self.net_num_pool_op_kernel_sizes, self.net_conv_kernel_sizes, False, True, True)
         self.network.inference_apply_nonlin = softmax_helper
-
         if torch.cuda.is_available():
             self.network.cuda()
 
@@ -452,14 +443,12 @@ class nnUNetTrainer(NetworkTrainer):
         self.network.train(current_mode)
         return ret
 
-
     def data_init(self):
         self.network.eval()
         assert self.was_initialized, "must initialize, ideally with checkpoint (or train first)"
         if self.dataset_val is None:
             self.load_dataset()
             self.do_split()
-            
             
     def validate(self, do_mirroring: bool = True, use_sliding_window: bool = True, step_size: float = 0.5,
                  save_softmax: bool = True, use_gaussian: bool = True, overwrite: bool = True,

@@ -21,8 +21,8 @@ from configuration import MAX_EPOCH
 class nnUNetTrainerV2(nnUNetTrainer):
     def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
                  unpack_data=True, deterministic=True, fp16=False):
-        super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
-                         deterministic, fp16)
+        super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
+                         unpack_data, deterministic, fp16)
         self.max_num_epochs = MAX_EPOCH
         self.initial_lr = 1e-2
         self.deep_supervision_scales = None
@@ -30,11 +30,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
         self.pin_memory = True
 
     def initialize(self, training=True, force_load_plans=False):
-        """
-        - replaced get_default_augmentation with get_moreDA_augmentation
-        - enforce to only run this code once
-        - loss function wrapper for deep supervision
-        """
         if not self.was_initialized:
             maybe_mkdir_p(self.output_folder)
 
@@ -51,12 +46,10 @@ class nnUNetTrainerV2(nnUNetTrainer):
             weights[~mask] = 0
             weights = weights / weights.sum()
             self.ds_loss_weights = weights
-            # now wrap the loss
             self.loss = MultipleOutputLoss2(self.loss, self.ds_loss_weights)
             ################# END ###################
 
-            self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] +
-                                                      "_stage%d" % self.stage)
+            self.folder_with_preprocessed_data = join(self.dataset_directory, self.plans['data_identifier'] + "_stage%d" % self.stage)
             if training:
                 self.dl_tr, self.dl_val = self.get_basic_generators()
                 if self.unpack_data:
@@ -146,7 +139,6 @@ class nnUNetTrainerV2(nnUNetTrainer):
                                save_softmax=save_softmax, use_gaussian=use_gaussian,
                                overwrite=overwrite, validation_folder_name=validation_folder_name, debug=debug,
                                all_in_gpu=all_in_gpu, segmentation_export_kwargs=segmentation_export_kwargs)
-
         self.network.do_ds = ds
         return ret
 
