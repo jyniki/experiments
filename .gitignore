@@ -6,3 +6,4 @@ experiments.udb
 /.vscode/
 **/configs/
 *.yaml
+view.ipynb
