@@ -33,8 +33,8 @@ class nnUNetTrainerV2_DDP(nnUNetTrainerV2):
                  stage=None, unpack_data=True, deterministic=True, distribute_batch_size=False, fp16=False):
         super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage,
                          unpack_data, deterministic, fp16)
-        self.init_args = (plans_file, fold, local_rank, output_folder, dataset_directory, batch_dice, stage, unpack_data,
-            deterministic, distribute_batch_size, fp16)
+        self.init_args = (plans_file, fold, local_rank, output_folder, dataset_directory, batch_dice, stage, 
+                          unpack_data, deterministic, fp16, distribute_batch_size)
         self.distribute_batch_size = distribute_batch_size
         np.random.seed(local_rank)
         torch.manual_seed(local_rank)

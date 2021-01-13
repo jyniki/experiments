@@ -18,8 +18,8 @@ from torch.nn.utils import clip_grad_norm_
 class nnUNetTrainerV2_DP(nnUNetTrainerV2):
     def __init__(self, plans_file, fold, output_folder=None, dataset_directory=None, batch_dice=True, stage=None,
                  unpack_data=True, deterministic=True, num_gpus=1, distribute_batch_size=False, fp16=False):
-        super(nnUNetTrainerV2_DP, self).__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage,
-                                                unpack_data, deterministic, fp16)
+        super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage,
+                        unpack_data, deterministic, fp16)
         self.init_args = (plans_file, fold, output_folder, dataset_directory, batch_dice, stage, 
                           unpack_data, deterministic, fp16, num_gpus, distribute_batch_size)
         self.num_gpus = num_gpus
@@ -30,11 +30,11 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
         self.loss_weights = None
 
     def setup_DA_params(self):
-        super(nnUNetTrainerV2_DP, self).setup_DA_params()
+        super().setup_DA_params()
         self.data_aug_params['num_threads'] = 8 * self.num_gpus
 
     def process_plans(self, plans):
-        super(nnUNetTrainerV2_DP, self).process_plans(plans)
+        super().process_plans(plans)
         if not self.distribute_batch_size:
             self.batch_size = self.num_gpus * self.plans['plans_per_stage'][self.stage]['batch_size']
         else:
@@ -44,11 +44,6 @@ class nnUNetTrainerV2_DP(nnUNetTrainerV2):
                 print("WARNING: self.batch_size % self.num_gpus != 0. Will not be able to use the GPUs well")
 
     def initialize(self, training=True, force_load_plans=False):
-        """
-        - replaced get_default_augmentation with get_moreDA_augmentation
-        - only run this code once
-        - loss function wrapper for deep supervision
-        """
         if not self.was_initialized:
             maybe_mkdir_p(self.output_folder)
 
